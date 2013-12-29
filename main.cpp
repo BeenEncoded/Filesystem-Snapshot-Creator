@@ -4,6 +4,13 @@
 
 using namespace std;
 
+/* @TODO
+ * 
+ * -  Start on snapshot object
+ * 
+ */
+
+
 int main()
 {
     color::initialize();
