@@ -6,7 +6,7 @@ using namespace std;
 
 /* @TODO
  * 
- * -  Start on snapshot object
+ * -  Start on snapshotList_class object
  * 
  */
 
