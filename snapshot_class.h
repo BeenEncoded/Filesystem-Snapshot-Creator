@@ -13,14 +13,20 @@ namespace snapshot
     typedef std::string time_type;
     typedef std::vector<path_type> pathList_type;
     
-    /* File stream operators: */
+    /** File stream operators: */
     std::ostream& operator<<(std::ostream&, pathList_type&);
     std::istream& operator>>(std::istream&, pathList_type&);
     
+    /** File stream operators for the snapshot class: */
+    std::ostream& operator<<(std::ostream&, snapshot_class&);
+    std::istream& operator>>(std::istream&, snapshot_class&);
     
     class snapshot_class
     {
     public:
+        explicit snapshot_class(const pathList_type& p, const time_type& t) : path_list(p), 
+                timestamp(t) {}
+        
         explicit snapshot_class() : path_list(), timestamp("") {}
         ~snapshot_class()
         {
@@ -50,6 +56,7 @@ namespace snapshot
             return !(this->operator==(snap));
         }
         
+        /* Erases all data in the object.*/
         void clear()
         {
             for(path_type s : this->path_list) s.erase();
@@ -57,7 +64,22 @@ namespace snapshot
             this->timestamp.erase();
         }
         
+        bool take_snapshot(const std::string&) const;
+        
+        /* Getters. */
+        const time_type& get_timestamp() const
+        {
+            return this->timestamp;
+        }
+        
+        const pathList_type& get_pathList() const
+        {
+            return this->path_list;
+        }
+        
+        /* Filesstream serializers. */
         std::ostream& out(std::ostream&) const;
+        std::istream& in(std::istream&);
         
     private:
         

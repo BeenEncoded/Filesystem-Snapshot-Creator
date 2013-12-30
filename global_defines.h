@@ -38,6 +38,9 @@
 #define HCENTER 40
 #define VCENTER 6
 
+//------------------------------------------------------------------------------
+
+#define SNAPSHOT_FILE string(fsys_class().gpath() + "\\Your Snapshots.snap")
 
 
 #endif
