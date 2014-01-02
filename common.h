@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <vector>
+#include <fstream>
 #include "global_defines.h"
 
 namespace common
@@ -83,6 +84,28 @@ namespace common
         }
         
         std::string get_user_string(const std::string&);
+        
+        bool is_sure(const std::string&);
+        
+    }
+    
+    namespace filesystem
+    {
+        inline unsigned int size(std::ifstream& in)
+        {
+            if(!in.good())
+            {
+                return 0;
+            }
+            unsigned int s(0);
+            std::ifstream::pos_type p, temp(in.tellg());
+            in.seekg(0, std::ifstream::beg);
+            p = in.tellg();
+            in.seekg(0, std::ifstream::end);
+            s = (in.tellg() - p);
+            in.seekg(temp);
+            return s;
+        }
         
     }
     

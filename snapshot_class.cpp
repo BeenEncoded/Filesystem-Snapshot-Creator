@@ -8,6 +8,7 @@
 #include "boost_wrapper.h"
 #include "fsysclass.h"
 #include "t_extra.h"
+#include <conio.h>
 #include "global_defines.h"
 
 using namespace std;
@@ -79,6 +80,39 @@ namespace
         }
         return id;
     }
+    
+    // Functions emplemented during a snapshot:
+    
+    inline void display_message()
+    {
+        cls();
+        for(short x = 0; x < 6; x++)
+        {
+            cout<< endl;
+        }
+        center("Snapshot in progress, please wait...  Press any key to cancel");
+    }
+    
+    inline bool snapshot_interrupt()
+    {
+        using namespace common;
+        bool b;
+        if(kbhit())
+        {
+            cl();
+            b = is_sure("Do you want to cancel the snapshot in progress?");
+            if(!b)
+            {
+                display_message();
+            }
+            return b;
+        }
+        return false;
+    }
+    
+    
+    //-----------------------------------------
+    
     
 }
 
@@ -174,11 +208,20 @@ namespace snapshot
         {
             return snapshot_class();
         }
+        
+        display_message();
+        
         snapshot_class tempsnap, tempsnap2;
         pathList_type newpathlist({});
         
         //scope for boost iterator
         {
+            
+            if(snapshot_interrupt())
+            {
+                return snapshot_class();
+            }
+            
             boost_iter it(root);
             while(!it.at_end())
             {
