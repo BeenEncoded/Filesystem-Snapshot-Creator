@@ -1,4 +1,5 @@
 #include <iostream>
+#include "snapshot_class.h"
 #include "common.h"
 #include "color.h"
 
@@ -10,6 +11,14 @@ using namespace std;
  * 
  */
 
+
+inline void main_menu()
+{
+    using namespace snapshot;
+    using namespace common;
+    
+    
+}
 
 int main()
 {

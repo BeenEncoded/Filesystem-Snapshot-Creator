@@ -2,7 +2,10 @@
 #define SNAPSHOT_CLASS_H_INCLUDED
 #include <string>
 #include <vector>
+#include "global_defines.h"
 #include <fstream>
+
+
 
 namespace snapshot
 {
@@ -12,6 +15,32 @@ namespace snapshot
     typedef std::string path_type;//make a pos_type container to load when we need to use the data at that pos
     typedef std::string time_type;
     typedef std::vector<path_type> pathList_type;
+    
+    /** ------- other functions ------------------------------------ */
+    
+    
+    /* Loads ids from the file.  May change with filesystem structure. */
+    std::vector<id_type> load_ids();
+    
+    inline bool is_id(const id_type& id, const std::vector<id_type>& ids)
+    {
+        for(auto i : ids) if(i == id) return true;
+        return false;
+    }
+    
+    inline id_type newid()
+    {
+        id_type id(1);
+        std::vector<id_type> ids(load_ids());
+        while(is_id(id, ids))
+        {
+            id++;
+        }
+        return id;
+    }
+    
+    /** -----------------------------------------------------------*/
+    
     
     /** File stream operators: */
     std::ostream& operator<<(std::ostream&, pathList_type&);
@@ -25,9 +54,10 @@ namespace snapshot
     {
     public:
         explicit snapshot_class(const pathList_type& p, const time_type& t) : path_list(p), 
-                timestamp(t) {}
+                timestamp(t), id(0) {}
         
-        explicit snapshot_class() : path_list(), timestamp("") {}
+        explicit snapshot_class() : path_list(), timestamp(""), id(0) {}
+        
         ~snapshot_class()
         {
             this->clear();
@@ -64,9 +94,10 @@ namespace snapshot
             this->timestamp.erase();
         }
         
-        bool take_snapshot(const std::string&) const;
+        snapshot_class take_snapshot() const;
+        snapshot_class take_snapshot(const std::string&) const;
         
-        /* Getters. */
+        /** Getters. */
         const time_type& get_timestamp() const
         {
             return this->timestamp;
@@ -77,15 +108,27 @@ namespace snapshot
             return this->path_list;
         }
         
-        /* Filesstream serializers. */
+        const id_type& gid() const
+        {
+            return this->id;
+        }
+        
+        /** Filesstream serializers. */
         std::ostream& out(std::ostream&) const;
         std::istream& in(std::istream&);
+        
+        /* Returns true if it contains data.  False if not.*/
+        static bool is_valid(const snapshot_class& snap)
+        {
+                return ((snap.get_pathList().size() > 0) && (snap.get_timestamp().size() > 0));
+        }
         
     private:
         
         //  Variables:
         pathList_type path_list;
         time_type timestamp;
+        id_type id;
         
     };
     

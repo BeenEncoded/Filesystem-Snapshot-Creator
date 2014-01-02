@@ -42,5 +42,7 @@
 
 #define SNAPSHOT_FILE string(fsys_class().gpath() + "\\Your Snapshots.snap")
 
+typedef unsigned long long id_type;
+
 
 #endif
