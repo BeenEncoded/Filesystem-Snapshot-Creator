@@ -104,6 +104,7 @@ namespace
             b = input::is_sure("Do you want to cancel the snapshot in progress?");
             if(!b)
             {
+                //if the user decides not to cancel, it should re-display the message.
                 display_message();
             }
             return b;
@@ -218,6 +219,7 @@ namespace snapshot
         //scope for boost iterator
         {
             
+            //check to see if the user wants to cancel. (button is pressed)
             if(snapshot_interrupt())
             {
                 return snapshot_class();

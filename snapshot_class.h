@@ -4,6 +4,7 @@
 #include <vector>
 #include "global_defines.h"
 #include <fstream>
+#include <sstream>
 
 
 
@@ -116,6 +117,45 @@ namespace snapshot
         /** Filesstream serializers. */
         std::ostream& out(std::ostream&) const;
         std::istream& in(std::istream&);
+        
+        /* Loads basic information about a snapshot. Namely, the timestamp and the id. */
+        static void load_basic(std::istream& in, time_type& t, id_type& id) const
+        {
+            t.erase();
+            id = 0;
+            if(!in.good())
+            {
+                return;
+            }
+            std::stringstream ss;
+            std::string temps;
+            char *ch(new char()), delim(2);
+            while(((in.get(*ch), *ch) != delim))
+            {
+            }
+            delete ch;
+            
+            if(in.good())
+            {
+                std::getline(in, temps, delim);
+                if(!in.fail())
+                {
+                    ss<< temps;
+                    ss>> t;
+                    ss.str("");
+                }
+            }
+            if(in.good())
+            {
+                std::getline(in, temps, delim);
+                if(!in.fail())
+                {
+                    ss<< temps;
+                    ss>> id;
+                    ss.str("");
+                }
+            }
+        }
         
         /* Returns true if it contains data.  False if not.*/
         static bool is_valid(const snapshot_class& snap)
