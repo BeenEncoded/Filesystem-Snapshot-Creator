@@ -62,7 +62,7 @@ inline void main_menu()
         cout<< " 1 -  Take snapshot"<< endl;
         cout<< " q -  Exit"<< endl;
         
-        ch = gkey();
+        ch = input::gkey();
         switch(tolower(ch))
         {
             case '1':

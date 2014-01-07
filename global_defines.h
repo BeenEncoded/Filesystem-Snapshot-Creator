@@ -1,5 +1,6 @@
 #ifndef GLOBAL_DEFINES_H_INCLUDED
 #define GLOBAL_DEFINES_H_INCLUDED
+#include "fsysclass.h"
 
 /* Character sets: */
 #define LETTERS "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <data xmlns="http://www.netbeans.org/ns/make-project-private/1">
+        <activeConfTypeElem>1</activeConfTypeElem>
+        <activeConfIndexElem>0</activeConfIndexElem>
+    </data>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="18">
+        <file>
+            <url>main.cpp</url>
+            <bookmark id="11">
+                <name/>
+                <line>10</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/main.cpp</file>
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/global_defines.h</file>
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/snapshot_class.cpp</file>
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/snapshot_class.h</file>
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/color.cpp</file>
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/color.h</file>
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/common.cpp</file>
+        <file>file:/D:/C++/Current%20Projects/Filesystem%20Snapshot%20Creator/common.h</file>
+    </open-files>
+</project-private>

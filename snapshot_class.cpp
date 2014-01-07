@@ -85,6 +85,7 @@ namespace
     
     inline void display_message()
     {
+        using namespace common;
         cls();
         for(short x = 0; x < 6; x++)
         {
@@ -100,7 +101,7 @@ namespace
         if(kbhit())
         {
             cl();
-            b = is_sure("Do you want to cancel the snapshot in progress?");
+            b = input::is_sure("Do you want to cancel the snapshot in progress?");
             if(!b)
             {
                 display_message();

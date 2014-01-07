@@ -205,7 +205,7 @@ namespace common
                 {
                     cout<< endl;
                 }
-                cetner(((message.size() > 0) ? message : "Are you sure?"));
+                center(((message.size() > 0) ? message : "Are you sure?"));
                 cout<< endl;
                 center("Y/N");
                 cout<< endl;
