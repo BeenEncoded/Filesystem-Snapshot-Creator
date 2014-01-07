@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=MinGW-Windows
+CND_PLATFORM=MinGW_1-Windows
 CND_DLIB_EXT=dll
 CND_CONF=Debug
 CND_DISTDIR=dist
@@ -45,11 +45,11 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=-m32
+CFLAGS=-m64
 
 # CC Compiler Flags
-CCFLAGS=-m32
-CXXFLAGS=-m32
+CCFLAGS=-m64
+CXXFLAGS=-m64
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -62,46 +62,46 @@ LDLIBSOPTIONS=-lboost_filesystem -lboost_system
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem_snapshot_creator.exe
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem-snapshot-creator.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem_snapshot_creator.exe: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem-snapshot-creator.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem_snapshot_creator ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem-snapshot-creator ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/boost_wrapper.o: boost_wrapper.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/boost_wrapper.o boost_wrapper.cpp
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/boost_wrapper.o boost_wrapper.cpp
 
 ${OBJECTDIR}/color.o: color.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/color.o color.cpp
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/color.o color.cpp
 
 ${OBJECTDIR}/common.o: common.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/common.o common.cpp
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/common.o common.cpp
 
 ${OBJECTDIR}/fsysclass.o: fsysclass.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/fsysclass.o fsysclass.cpp
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/fsysclass.o fsysclass.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/snapshot_class.o: snapshot_class.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/snapshot_class.o snapshot_class.cpp
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/snapshot_class.o snapshot_class.cpp
 
 ${OBJECTDIR}/t_extra.o: t_extra.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/t_extra.o t_extra.cpp
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/t_extra.o t_extra.cpp
 
 # Subprojects
 .build-subprojects:
@@ -109,7 +109,7 @@ ${OBJECTDIR}/t_extra.o: t_extra.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem_snapshot_creator.exe
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/filesystem-snapshot-creator.exe
 
 # Subprojects
 .clean-subprojects:

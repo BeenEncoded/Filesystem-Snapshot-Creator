@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Filesystem Snapshot Creator
+PROJECTNAME=Filesystem-Snapshot-Creator
 
 # Active Configuration
 DEFAULTCONF=Debug

@@ -60,14 +60,20 @@
       <compileType>
         <cTool>
           <developmentMode>5</developmentMode>
-          <architecture>1</architecture>
+          <architecture>2</architecture>
           <standard>3</standard>
+          <incDir>
+            <pElem>C:\MinGW\include</pElem>
+          </incDir>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
-          <architecture>1</architecture>
+          <architecture>2</architecture>
           <standard>8</standard>
+          <incDir>
+            <pElem>C:\MinGW\include</pElem>
+          </incDir>
           <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
@@ -119,14 +125,14 @@
         <cTool>
           <developmentMode>5</developmentMode>
           <stripSymbols>true</stripSymbols>
-          <architecture>1</architecture>
+          <architecture>2</architecture>
           <standard>3</standard>
           <warningLevel>2</warningLevel>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
           <stripSymbols>true</stripSymbols>
-          <architecture>1</architecture>
+          <architecture>2</architecture>
           <standard>8</standard>
           <warningLevel>2</warningLevel>
         </ccTool>
