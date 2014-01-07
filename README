@@ -1,3 +1,9 @@
 Snapshot Program will be designed to allow the user
 to take a snapshot of their filesystem and keep records of
 the changes that were made.
+
+Made to use with:
+
+Netbeans (optional)
+
+Compiled with MinGW and the Boost Library.
