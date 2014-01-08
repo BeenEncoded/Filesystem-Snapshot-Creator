@@ -85,7 +85,7 @@ int main()
 {
     color::initialize();
     
-    
+    main_menu();
     
     return 0;
 }
