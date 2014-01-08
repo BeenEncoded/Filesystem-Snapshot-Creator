@@ -19,9 +19,11 @@
 
 using namespace std;
 
-/* @TODO
+/* @todo
  * 
- * -  Start on snapshotList_class object
+ * -  Add delete function to delete a snapshot
+ * -  Add save function to save snapshot to file
+ * -  Write up the menus
  * 
  */
 
