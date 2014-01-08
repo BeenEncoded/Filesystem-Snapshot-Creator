@@ -48,6 +48,7 @@ namespace displayBuffer
             this->beg = 0;
             this->end = 0;
             this->cur = 0;
+            this->setp();
             this->display.erase(this->display.begin(), this->display.end());
         }
         
@@ -129,6 +130,15 @@ namespace displayBuffer
             }
         }
         
+        void set_buffer(const buffer_type& b)
+        {
+            this->display = b;
+            if(!this->window_is_valid())
+            {
+                this->reset_window();
+            }
+        }
+        
         /* Returns position data pertaining to positions relative to
          the entire display, and that of the window. */
         const buffer_position_data& pos() const
@@ -145,12 +155,20 @@ namespace displayBuffer
         
         /* Checks to make sure if the buffer window falls within the
          bounds of the whole display, and conforms to the size, and that
-         the current position is within it. */
+         the current position is within it. If ever this returns false, then
+         reset_window should be called.*/
         bool window_is_valid() const
         {
-            return ((this->cur >= this->beg) && (this->cur < this->end) && 
-                    (this->end > this->beg) && ((this->end - this->beg) == unsigned(VDB_CLASS_WINDOWSIZE)) && 
-                    (this->end <= this->display.size()));
+            return (
+                    //check bounds:
+                    (this->cur >= this->beg) && (this->cur < this->end) && 
+                    (this->end > this->beg) && ((this->end - this->beg) <= unsigned(VDB_CLASS_WINDOWSIZE)) && 
+                    //check check that they fall within the actual display size:
+                    (this->end <= this->display.size()) && 
+                    ((this->end - this->beg) > 0) && 
+                    //so, now we check to see if the window size matches up correctly with the display size:
+                    (((this->display.size() > unsigned(VDB_CLASS_WINDOWSIZE)) && ((this->end - this->beg) == unsigned(VDB_CLASS_WINDOWSIZE))) ||
+                    ((this->display.size() <= unsigned(VDB_CLASS_WINDOWSIZE)) && ((this->end - this->beg) == this->display.size()))));
         }
         
         /* Returns true if the window is smaller than the whole display */

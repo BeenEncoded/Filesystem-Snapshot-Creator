@@ -23,6 +23,7 @@ namespace color
     namespace set
     {
         void blackwhite();
+        void greenblue();
     }
     
 }

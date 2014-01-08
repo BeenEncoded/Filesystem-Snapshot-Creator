@@ -203,7 +203,8 @@ namespace snapshot
     }
     
     /* Returns a snapshot class that contains the snapshot.  Argument passed is
-     the folder from which to take a snapshot of.  The default is the entire C drive. */
+     the folder from which to take a snapshot of.  The default is the entire C drive. 
+     this is also when the object is assigned an ID.*/
     snapshot_class snapshot_class::take_snapshot(const string& root) const
     {
         if(!fsys_class(root).is_folder())
@@ -218,16 +219,14 @@ namespace snapshot
         
         //scope for boost iterator
         {
-            
-            //check to see if the user wants to cancel. (button is pressed)
-            if(snapshot_interrupt())
-            {
-                return snapshot_class();
-            }
-            
             boost_iter it(root);
             while(!it.at_end())
             {
+                //check to see if the user wants to cancel. (button is pressed)
+                if(snapshot_interrupt())
+                {
+                    return snapshot_class();
+                }
                 newpathlist.push_back(it.gdir());
                 it++;
             }

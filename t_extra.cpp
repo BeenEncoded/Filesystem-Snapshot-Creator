@@ -31,7 +31,7 @@ by the system.   This allows for only 1 piece of data, to represent many
  individual pieces.*/
 
 template<class type1, class type2>
-type2 conv(const type1& t1)
+inline type2 conv(const type1& t1)
 {
     stringstream ss;
     type2 t2 = type2();
@@ -42,49 +42,18 @@ type2 conv(const type1& t1)
 }
 
 
-/*-------------------------------------- 
- * Constructors                        |
- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
-
-chrono_date::chrono_date()
-{
-    chrono_date::asc_time = chrono_date::t();
-    chrono_date::year_v = chrono_date::year();
-}
-
-chrono_date::chrono_date(const string& s)
-{
-    chrono_date::asc_time = s;
-    chrono_date::year_v = chrono_date::year();
-}
-
-chrono_date::chrono_date(const char* ch)
-{
-    chrono_date::asc_time = ch;
-    chrono_date::year_v = chrono_date::year();
-}
-
-chrono_date::~chrono_date()
-{
-}
-
-/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- * Constructors                        |
- *------------------------------------*/
-
-
 /*****************************************
  * Member functions of chrono_date():    |
  vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
 
-const string chrono_date::gasc_time()
+const string& chrono_date::gasc_time() const
 {
     return chrono_date::asc_time;
 }
 
 /* Returns the military hour as an integer.  This is
 usful for calculations.*/
-int chrono_date::hour()
+int chrono_date::hour() const
 {
     stringstream ss;
     int hourtime = 0;
@@ -122,7 +91,7 @@ string chrono_date::t()
 
 /* Returns the minute value as an integer.  Usflul
 for calculations.*/
-int chrono_date::minute()
+int chrono_date::minute() const
 {
     stringstream ss;
     ss.str("");
@@ -145,7 +114,7 @@ int chrono_date::minute()
 
 /* Returns the second value as an integer.  This
 is useful for calculations.*/
-int chrono_date::second()
+int chrono_date::second() const
 {
     stringstream ss;
     ss.str("");
@@ -169,7 +138,7 @@ int chrono_date::second()
 
 /* This returns the name of the day of the week as
 a string.*/
-string chrono_date::day_of_week()
+string chrono_date::day_of_week() const
 {
     string temps = "";
     if(asc_time.size() > 1)
@@ -184,7 +153,7 @@ string chrono_date::day_of_week()
 
 /* Returns the numeric value which represents the day of the week.
 1 = sunday, and 7 = saturday*/
-int chrono_date::num_day_of_week()
+int chrono_date::num_day_of_week() const
 {
     vector<string> week_names = {
         "Sun",
@@ -208,7 +177,7 @@ int chrono_date::num_day_of_week()
 }
 
 /* Returns the integer which represents the day of the month.*/
-int chrono_date::day_of_month()
+int chrono_date::day_of_month() const
 {
     stringstream ss;
     ss.str("");
@@ -231,7 +200,7 @@ int chrono_date::day_of_month()
 }
 
 /* Returns a string which represents the month name.*/
-string chrono_date::month_name()
+string chrono_date::month_name() const
 {
     string temps = "";
     if(asc_time.size() > 5)
@@ -245,7 +214,7 @@ string chrono_date::month_name()
 }
 
 /* Returns the integer value of the month.  1 = january, 12 = december.*/
-int chrono_date::month_number()
+int chrono_date::month_number() const
 {
     string mname = chrono_date::month_name();
     vector<string> months = {
@@ -274,7 +243,7 @@ int chrono_date::month_number()
 }
 
 /* Returns the integer value of the year.*/
-int chrono_date::year()
+int chrono_date::year() const
 {
     string temps = "";
     int yeari = 0;
@@ -335,15 +304,12 @@ string chrono_date::week_day_id_name()
 is earlier than the present time, aka: it's the past (relative to the current time)
  
  NOTE: May help to think of this is chrono_date::is_earlier_than()*/
-bool chrono_date::is_past(const string& curt)
+bool chrono_date::operator<(const chrono_date& pres_time)
 {
-    chrono_date pres_time = chrono_date();
-    pres_time.asc_time = curt;
-    chrono_date temp;
-
-    //using a temporary class so that we can also change this to
-    //somthing other than the current time if we want to.
-    temp.asc_time = asc_time;
+    if((this == &pres_time) || (this->gasc_time() == pres_time.gasc_time()))
+    {
+        return false;
+    }
     /*
     from the biggest value, to the smallest:
 
@@ -357,41 +323,41 @@ bool chrono_date::is_past(const string& curt)
     second
     */
 
-    if(temp.year() < pres_time.year())
+    if(this->year() < pres_time.year())
     {
         return true;
     }
-    if(temp.year() == pres_time.year())
+    if(this->year() == pres_time.year())
     {
-        if(temp.month_number() < pres_time.month_number())
+        if((this->month_number()) < pres_time.month_number())
         {
             return true;
         }
-        if(temp.month_number() == pres_time.month_number())
+        if(this->month_number() == pres_time.month_number())
         {
-            if(temp.day_of_month() < pres_time.day_of_month())
+            if(this->day_of_month() < pres_time.day_of_month())
             {
                 return true;
             }
-            if(temp.day_of_month() == pres_time.day_of_month())
+            if(this->day_of_month() == pres_time.day_of_month())
             {
-                if(temp.hour() < pres_time.hour())
+                if(this->hour() < pres_time.hour())
                 {
                     return true;
                 }
-                if(temp.hour() == pres_time.hour())
+                if(this->hour() == pres_time.hour())
                 {
-                    if(temp.minute() < pres_time.minute())
+                    if(this->minute() < pres_time.minute())
                     {
                         return true;
                     }
-                    if(temp.minute() == pres_time.minute())
+                    if(this->minute() == pres_time.minute())
                     {
-                        if(temp.second() < pres_time.second())
+                        if(this->second() < pres_time.second())
                         {
                             return true;
                         }
-                        if(temp.second() == pres_time.second())
+                        if(this->second() == pres_time.second())
                         {
                             return false;
                         }
@@ -405,7 +371,7 @@ bool chrono_date::is_past(const string& curt)
 
 bool chrono_date::is_past()
 {
-    return chrono_date::is_past(chrono_date::t());
+    return this->operator<(chrono_date(this->t()));
 }
 
 /* Returns a string: "AM" or "PM", depending

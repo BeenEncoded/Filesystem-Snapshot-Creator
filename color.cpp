@@ -77,7 +77,7 @@ namespace color
     {
         void blue(const string& s)
         {
-            chighlight(eku::dark_blue, eku::aqua, s);
+            chighlight(eku::aqua, eku::dark_blue, s);
         }
         
         
@@ -90,7 +90,10 @@ namespace color
             setcol(eku::black, eku::white);
         }
         
-        
+        void greenblue()
+        {
+            setcol(eku::dark_blue, eku::green);
+        }
     }
     
 }

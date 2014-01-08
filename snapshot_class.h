@@ -17,6 +17,15 @@ namespace snapshot
     typedef std::string time_type;
     typedef std::vector<path_type> pathList_type;
     
+    /** Structs: */
+    
+    struct basic_snapshot_data
+    {
+        time_type t;
+        id_type id;
+        unsigned long int pathcount;
+    };
+    
     /** ------- other functions ------------------------------------ */
     
     
@@ -119,10 +128,11 @@ namespace snapshot
         std::istream& in(std::istream&);
         
         /* Loads basic information about a snapshot. Namely, the timestamp and the id. */
-        static void load_basic(std::istream& in, time_type& t, id_type& id)
+        static void load_basic(std::istream& in, basic_snapshot_data& bsd)
         {
-            t.erase();
-            id = 0;
+            bsd.t.erase();
+            bsd.id = 0;
+            bsd.pathcount = 0;
             if(!in.good())
             {
                 return;
@@ -130,6 +140,33 @@ namespace snapshot
             std::stringstream ss;
             std::string temps;
             char *ch(new char()), delim(2);
+            
+            //scope for temporary stuff:
+            {
+                //some temporary information
+                snapshot_class *tempsnap(new snapshot_class());
+                std::ifstream::pos_type *tpos(new std::ifstream::pos_type(in.tellg()));
+                
+                //because we will be dealing with a massive ammount of data (about 200,000 strings per snapshot is expected)
+                //we want to be memory efficient here
+                getline(in, temps);
+                if(temps.size() > 0)
+                {
+                    for(std::string::iterator it = temps.begin(); it != temps.end();)
+                    {
+                        ss<< *it;
+                        it = temps.erase(it);
+                    }
+                    ss>> *tempsnap;
+                    bsd.pathcount = tempsnap->get_pathList().size();
+                    delete tempsnap;
+                    
+                    //we jump back to our starting position so that we can sontinue the function
+                    in.seekg(*tpos);
+                    delete tpos;
+                }
+            } //scope end
+            
             while(((in.get(*ch), *ch) != delim))
             {
             }
@@ -141,7 +178,7 @@ namespace snapshot
                 if(!in.fail())
                 {
                     ss<< temps;
-                    ss>> t;
+                    ss>> bsd.t;
                     ss.str("");
                 }
             }
@@ -151,7 +188,7 @@ namespace snapshot
                 if(!in.fail())
                 {
                     ss<< temps;
-                    ss>> id;
+                    ss>> bsd.id;
                     ss.str("");
                 }
             }

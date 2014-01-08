@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 
+*.snap
 *.xml
 *.mk
 *.bash
