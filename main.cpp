@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include "global_defines.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ void take_snapshot()
     {
         ofstream out;
         ifstream in;
-        in.open(string(SNAPSHOT_FILE).c_str(), ios::in);
+        in.open(string(SNAPSHOT_FILE).c_str(), ios::INFILE);
         b = (filesystem::size(in) > 0);
         in.close();
         out.open(string(SNAPSHOT_FILE).c_str(), ios::app);
@@ -60,6 +61,7 @@ inline void main_menu()
         }
         
         cout<< " 1 -  Take snapshot"<< endl;
+        cout<< " 2 -  Manage Snapshots"<< endl;
         cout<< " q -  Exit"<< endl;
         
         ch = input::gkey();
@@ -67,7 +69,7 @@ inline void main_menu()
         {
             case '1':
             {
-                
+                take_snapshot();
             }
             break;
             

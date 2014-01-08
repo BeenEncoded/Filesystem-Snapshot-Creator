@@ -41,7 +41,12 @@
 
 //------------------------------------------------------------------------------
 
-#define SNAPSHOT_FILE string(fsys_class().gpath() + "\\Your Snapshots.snap")
+#define SNAPSHOT_FILE (fsys_class().gpath() + "\\Your Snapshots.snap")
+
+/* File stream defines.  These can be used to easily change the way the streams
+ are opened.*/
+#define INFILE in
+#define OUTFILE out
 
 typedef unsigned long long id_type;
 

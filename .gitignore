@@ -2,6 +2,9 @@
 ## Eclipse
 #################
 
+*.xml
+*.mk
+*.bash
 *nbproject
 *.pydevproject
 .project

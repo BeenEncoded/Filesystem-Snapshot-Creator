@@ -41,7 +41,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/fsysclass.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/snapshot_class.o \
-	${OBJECTDIR}/t_extra.o
+	${OBJECTDIR}/t_extra.o \
+	${OBJECTDIR}/vector_display_buffer.o
 
 
 # C Compiler Flags
@@ -102,6 +103,11 @@ ${OBJECTDIR}/t_extra.o: t_extra.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/t_extra.o t_extra.cpp
+
+${OBJECTDIR}/vector_display_buffer.o: vector_display_buffer.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -Wall -I/C\MinGW\include -std=c++11 -MMD -MP -MF $@.d -o ${OBJECTDIR}/vector_display_buffer.o vector_display_buffer.cpp
 
 # Subprojects
 .build-subprojects:

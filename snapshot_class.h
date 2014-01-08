@@ -119,7 +119,7 @@ namespace snapshot
         std::istream& in(std::istream&);
         
         /* Loads basic information about a snapshot. Namely, the timestamp and the id. */
-        static void load_basic(std::istream& in, time_type& t, id_type& id) const
+        static void load_basic(std::istream& in, time_type& t, id_type& id)
         {
             t.erase();
             id = 0;
