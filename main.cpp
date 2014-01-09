@@ -83,6 +83,9 @@ namespace
   with the class. */
 namespace snapshot
 {
+    struct snapshot_group
+    {
+    };
     
     /* Sorts snapshot information by date: from most recent (snaps.begin()) to
      the least recent (snaps.end())*/
@@ -257,6 +260,33 @@ namespace snapshot
         
     }
     
+    vector<string> create_snapshot_display(const vector<snapshot_class>& snaps)
+    {
+        vector<string> display;
+        if(snaps.size() > 0)
+        {
+            try
+            {
+                snapshot::sort_basic_data(snaps);
+            }
+            catch(const exception& e)
+            {
+                cout<< e.what();
+                common::wait();
+                abort();
+            }
+        }
+
+        for(unsigned int x = 0; x < snaps.size(); x++)
+        {
+            display.push_back(chrono_date(snaps[x].t).std_time_disp());
+            display.back() += ("  " + format_number(snaps[x].pathcount) + 
+                    string(" paths  "));
+            display.back() += ("(" + conv<id_type, string>(snaps[x].id) + ")");
+        }
+        return display;
+    }
+    
 }
 
 /* it takes a snapshot, and then saves it. */
@@ -294,29 +324,8 @@ inline void manage_snapshots()
     char ch, control;
     displayBuffer::list_buffer_class buf;
     vector<snapshot::basic_snapshot_data> snaps(snapshot::load_basic_snapshot_data());
-    vector<string> display;
+    vector<string> display(snapshot::create_snapshot_display(snaps));
     
-    if(snaps.size() > 0)
-    {
-        try
-        {
-            snapshot::sort_basic_data(snaps);
-        }
-        catch(const exception& e)
-        {
-            cout<< e.what();
-            wait();
-            abort();
-        }
-    }
-    
-    for(unsigned int x = 0; x < snaps.size(); x++)
-    {
-        display.push_back(chrono_date(snaps[x].t).std_time_disp());
-        display.back() += ("  " + format_number(snaps[x].pathcount) + 
-                string(" paths  "));
-        display.back() += ("(" + conv<id_type, string>(snaps[x].id) + ")");
-    }
     buf.set_buffer(display);
     display.erase(display.begin(), display.end());
     display = buf.buffer();
@@ -432,6 +441,17 @@ inline void manage_snapshots()
                             }
                         }
                         break;
+                        
+                        case DELETE_KEY:
+                        {
+                            if(is_sure(("Do you want to delete snapshot taken on " + snaps[buf.pos().whole].get_timestamp())))
+                            {
+                                delete_snapshot(snaps[buf.pos().whole].gid());
+                                snaps.erase((snaps.begin() + buf.pos().whole));
+                            }
+                            color::set::blackwhite();
+                        }
+                        break;
 
                         default:
                         {
@@ -449,6 +469,13 @@ inline void manage_snapshots()
                     {
                         case true:
                         {
+                            switch(ch)
+                            {
+                                default:
+                                {
+                                }
+                                break;
+                            }
                         }
                         break;
 

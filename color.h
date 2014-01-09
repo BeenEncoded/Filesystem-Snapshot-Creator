@@ -17,6 +17,7 @@ namespace color
     namespace centerhl
     {
         void blue(const std::string&);
+        void green(const std::string&);
     }
     
     //... screen color sets...
@@ -24,6 +25,7 @@ namespace color
     {
         void blackwhite();
         void greenblue();
+        void blue();
     }
     
 }
