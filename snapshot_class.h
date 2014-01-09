@@ -4,6 +4,7 @@
 #include <vector>
 #include "global_defines.h"
 #include <fstream>
+#include "common.h"
 #include <sstream>
 
 
@@ -130,6 +131,7 @@ namespace snapshot
         /* Loads basic information about a snapshot. Namely, the timestamp and the id. */
         static void load_basic(std::istream& in, basic_snapshot_data& bsd)
         {
+            common::input::ccin();
             bsd.t.erase();
             bsd.id = 0;
             bsd.pathcount = 0;
@@ -198,6 +200,50 @@ namespace snapshot
         static bool is_valid(const snapshot_class& snap)
         {
                 return ((snap.get_pathList().size() > 0) && (snap.get_timestamp().size() > 0));
+        }
+        
+        /* Retrieves the id from a line that should contain a snapshot in a file.
+         It does not change the state of the stream. */
+        static id_type retrieve_id(std::istream& in)
+        {
+            std::stringstream *ss(new std::stringstream());
+            id_type id;
+            std::string *temps(new std::string(""));
+            
+            {
+                std::istream::pos_type *temp_pos(new std::istream::pos_type(in.tellg()));
+                char *delim(new char(2)), *ch(new char());
+                
+                for(short x = 0; ((x < 2) && in.good()); x++)
+                {
+                    while((in.get(*ch), *ch) != *delim);
+                }
+                if(in.good())
+                {
+                    getline(in, *temps);
+                    if(in.fail())
+                    {
+                        in.seekg(*temp_pos);
+                        delete temp_pos;
+                        delete delim;
+                        delete ch;
+                        delete ss;
+                        delete temps;
+                        return 0;
+                    }
+                }
+                in.seekg(*temp_pos);
+                delete temp_pos;
+                delete delim;
+                delete ch;
+            }
+            
+            (*ss)<< (*temps);
+            (*ss)>> id;
+            temps->erase();
+            delete temps;
+            delete ss;
+            return id;
         }
         
     private:

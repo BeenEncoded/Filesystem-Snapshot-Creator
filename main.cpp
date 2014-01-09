@@ -1,29 +1,31 @@
 /* This program is written by Jonathan Whitlock.
  * 
- * For terms of use, please refer to the GNU General Public Liscense.
+ * For terms of use, please refer to the GNU General Public Liscense at
+ * http://www.gnu.org/licenses/gpl.html
  */
 
-#include <iostream>
 #include "snapshot_class.h"
 #include "common.h"
 #include "color.h"
+#include "global_defines.h"
+#include "vector_display_buffer.h"
+#include "t_extra.h"
+#include "fsysclass.h"
+#include <iostream>
+#include <exception>
+#include <windows.h>
 #include <fstream>
 #include <vector>
 #include <string>
 #include <sstream>
-#include "global_defines.h"
-#include "vector_display_buffer.h"
-#include "t_extra.h"
-#include <exception>
-#include <windows.h>
+#include <conio.h>
 
 using namespace std;
 
 /* @todo
  * 
- * -  Add delete function to delete a snapshot
- * -  Add save function to save snapshot to file
  * -  Write up the menus
+ * -  Create snapshot_modification function
  * 
  */
 
@@ -156,6 +158,7 @@ namespace snapshot
     /* Loads a snapshot of the specified id */
     inline snapshot_class from_id(const id_type& id)
     {
+        common::input::ccin();
         string filename(SNAPSHOT_FILE);
         if(!fsys_class(filename).is_file())
         {
@@ -201,20 +204,72 @@ namespace snapshot
         temps.erase();
         return snapshot_class();
     }
+    
+    /* Re-writes the file without the snapshot bearing
+     the specified id.*/
+    inline void delete_snapshot(const id_type& id)
+    {
+        ifstream in;
+        ofstream out;
+        if(!fsys_class(string(SNAPSHOT_FILE)).is_file())
+        {
+            return;
+        }
+        
+        /* Temporary scope.  I do not want these variables around
+         when the function ends. */
+        {
+            string *snapfile(new string(SNAPSHOT_FILE)), *tempfile(new string(fsys_class().gpath() + "\\Temp.dat"));
+            char *ch(new char());
+            
+            //i had the wierdest dream: that arrays had member functions!!  wierd...
+            //As I dreamed it, I thought to myself: "So that's how they did it in C!!" LOL
+            
+            
+            rename(snapfile->c_str(), tempfile->c_str());
+            out.open(snapfile->c_str(), ios::OUTFILE);
+            in.open(tempfile->c_str(), ios::INFILE);
+            
+            while(in.good())
+            {
+                //we found our snapshot, so let's skip over it:
+                if(snapshot_class::retrieve_id(in) == id)
+                {
+                    while(((in.get(*ch), *ch) != '\n') && in.good());
+                    continue;
+                }
+                
+                //copy the next snapshot:
+                while(in.good() && ((in.get(*ch), *ch) != '\n'))
+                {
+                    out<< *ch;
+                }
+            }
+            in.close();
+            out.close();
+            fsys_class(*tempfile).del();
+            tempfile->erase();
+            snapfile->erase();
+            delete tempfile;
+            delete snapfile;
+            delete ch;
+        }
+        
+    }
+    
 }
 
 /* it takes a snapshot, and then saves it. */
 inline void take_snapshot()
 {
-    using namespace snapshot;
     using namespace common;
     color::set::greenblue();
     
-    snapshot_class snap;
+    snapshot::snapshot_class snap;
     bool b(false);
     
     snap = snap.take_snapshot();
-    if(snapshot_class::is_valid(snap))
+    if(snapshot::snapshot_class::is_valid(snap))
     {
         ofstream out;
         ifstream in;
@@ -241,15 +296,18 @@ inline void manage_snapshots()
     vector<snapshot::basic_snapshot_data> snaps(snapshot::load_basic_snapshot_data());
     vector<string> display;
     
-    try
+    if(snaps.size() > 0)
     {
-        snapshot::sort_basic_data(snaps);
-    }
-    catch(const exception& e)
-    {
-        cout<< e.what();
-        wait();
-        abort();
+        try
+        {
+            snapshot::sort_basic_data(snaps);
+        }
+        catch(const exception& e)
+        {
+            cout<< e.what();
+            wait();
+            abort();
+        }
     }
     
     for(unsigned int x = 0; x < snaps.size(); x++)
@@ -273,7 +331,167 @@ inline void manage_snapshots()
         {
             cout<< endl;
         }
-        
+        for(unsigned int x = 0; x < display.size(); x++)
+        {
+            switch(x == buf.pos().part)
+            {
+                case true:
+                {
+                    color::hl::green("[");
+                }
+                break;
+                
+                case false:
+                {
+                    cout<< " ";
+                }
+                
+                default:
+                {
+                    cout<< " ";
+                }
+                break;
+            }
+            
+            cout<< display[x];
+            
+            if(x == buf.pos().part)
+            {
+                color::hl::green("]");
+            }
+        }
+        ch = getch();
+
+        //scope for namespace common::input
+        {
+            using namespace common::input;
+            switch(is_control_key(ch))
+            {
+                case true:
+                {
+                    control = getch();
+                    switch(int(control))
+                    {
+                        //up down end home pgup pgdown
+                        case UP_KEY:
+                        {
+                            buf.plus();
+                            switch((buf.buffer().size() > 0) && (display.size() > 0))
+                            {
+                                case true:
+                                {
+                                    if(buf.buffer()[0] != display[0])
+                                    {
+                                        display.pop_back();
+                                        display.insert(display.begin(), buf.buffer()[0]);
+                                    }
+                                }
+                                break;
+
+                                case false:
+                                {
+                                    display = buf.buffer();
+                                }
+                                break;
+
+                                default:
+                                {
+                                    display = buf.buffer();
+                                }
+                                break;
+                            }
+                        }
+                        break;
+
+                        case DOWN_KEY:
+                        {
+                            buf.minus();
+                            switch((buf.buffer().size() > 0) && (display.size() > 0))
+                            {
+                                case true:
+                                {
+                                    if(buf.buffer()[0] != display[0])
+                                    {
+                                        display.erase(display.begin());
+                                        display.push_back(buf.buffer()[0]);
+                                    }
+                                }
+                                break;
+
+                                case false:
+                                {
+                                    display = buf.buffer();
+                                }
+                                break;
+
+                                default:
+                                {
+                                    display = buf.buffer();
+                                }
+                                break;
+                            }
+                        }
+                        break;
+
+                        default:
+                        {
+                            cout<< "int(control) = "<< int(control)<< endl;
+                            wait();
+                        }
+                        break;
+                    }
+                }
+                break;
+
+                case false:
+                {
+                    switch(is_char(ch))
+                    {
+                        case true:
+                        {
+                        }
+                        break;
+
+                        case false:
+                        {
+                            switch(int(ch))
+                            {
+                                //enter backspace escape
+
+                                case ENTER_KEY:
+                                {
+                                    //modify the selected snapshot (delete, compare)
+                                }
+                                break;
+
+                                case BACKSPACE_KEY:
+                                {
+                                    return;
+                                }
+                                break;
+
+                                default:
+                                {
+                                }
+                                break;
+                            }
+                        }
+                        break;
+
+                        default:
+                        {
+                        }
+                        break;
+                    }
+                }
+                break;
+
+                default:
+                {
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -312,6 +530,8 @@ inline void main_menu()
             
             case '2':
             {
+                manage_snapshots();
+                color::set::blackwhite();
             }
             break;
             

@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include "global_defines.h"
+#include <iostream>
 
 namespace common
 {

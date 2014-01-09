@@ -69,7 +69,7 @@ namespace displayBuffer
         
         bool at_end() const
         {
-            return (this->cur == (this->display.size() - 1));
+            return (this->cur >= (this->display.size() - 1));
         }
         
         bool at_beg() const
@@ -80,7 +80,7 @@ namespace displayBuffer
         /* Moves the window 'up' in the vector (decrements the current position) */
         void plus()
         {
-            if(!this->window_can_be_moved())
+            if(!this->window_can_be_moved() || this->at_beg())
             {
                 //make sure that the window is valid
                 if(!this->window_is_valid())
@@ -107,7 +107,7 @@ namespace displayBuffer
         /* Moves the window 'down' in the vector (increments the current position) */
         void minus()
         {
-            if(!this->window_can_be_moved())
+            if(!this->window_can_be_moved() || this->at_end())
             {
                 if(!this->window_is_valid())
                 {
