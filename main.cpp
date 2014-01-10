@@ -21,6 +21,7 @@
 #include <string>
 #include <sstream>
 #include <conio.h>
+#include <map>
 
 using namespace std;
 
@@ -77,6 +78,35 @@ namespace
         }
         temps.erase();
         return newtemps;
+    }
+    
+    inline string sanitize_string(const string& s)
+    {
+        if(s.size() == 0)
+        {
+            return "";
+        }
+        string temps = s;
+        
+        //remove specials
+        for(string::iterator it = temps.begin(); it != temps.end(); it++)
+        {
+            if(common::is_special(*it) && (*it != ' '))
+            {
+                *it = ' ';
+            }
+        }
+        
+        if(temps.size() > 0)
+        {
+            //make sure that the string ends with a character that can be shown
+            while(common::is_special(temps.back()))
+            {
+                temps.erase((temps.begin() + (temps.size() - 1)));
+            }
+        }
+        
+        return s;
     }
 }
 
@@ -285,7 +315,47 @@ namespace snapshot
         return display;
     }
     
-    /* write the snapshot comparison functions*/
+    /* Returns elements in base that are not found in changed. */
+    inline vector<string> differences(const map<string, char>& base, const map<string, char>& changed)
+    {
+        vector<string> differences;
+        for(map<string, char>::const_iterator it = base.begin(); it != base.end(); ++it)
+        {
+            if(changed.find(it->first) == changed.end())
+            {
+                differences.push_back(it->first);
+            }
+        }
+        return differences;
+    }
+    
+    inline void compare(const snapshotSelection::snapshot_selection_class& selected)
+    {
+        snapshot_class snap1(from_id(selected.snapshots()[0]->id)), snap2(from_id(selected.snapshots()[1]->id));
+        map<string, char> before, after;
+        vector<string> created, deleted;
+        ofstream out;
+        
+        if(chrono_date(snap2.get_timestamp()) < chrono_date(snap1.get_timestamp()))
+        {
+            swap(snap1, snap2);
+        }
+        
+        for(string s : snap1.get_pathList()) before[s] = 'a';
+        for(string s : snap2.get_pathList()) after[s] = 'a';
+        
+        created = differences(after, before);
+        deleted = differences(before, after);
+        
+        out.open(string(settings.report_folder + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt").c_str(), ios::OUTFILE);
+        
+        out<< "Snapshot time frame: ["<< chrono_date(snap1.get_timestamp()).std_time_disp()<< "], ["<< 
+                chrono_date(snap2.get_timestamp()).std_time_disp()<< "]"<< endl;
+        for(short x = 0; x < 3; x++) out<< endl;
+        /* The rest of the report.  time for bed!*/
+        
+        out.close();
+    }
 }
 
 /* it takes a snapshot, and then saves it. */
