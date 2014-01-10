@@ -11,6 +11,7 @@
 #include "vector_display_buffer.h"
 #include "t_extra.h"
 #include "fsysclass.h"
+#include "snapshot_selection_class.hpp"
 #include <iostream>
 #include <exception>
 #include <windows.h>
@@ -25,7 +26,7 @@ using namespace std;
 /* @todo
  * 
  * -  Write up the menus
- * -  Create snapshot_modification function
+ * -  Snapshot comparison functions
  * 
  */
 
@@ -83,10 +84,6 @@ namespace
   with the class. */
 namespace snapshot
 {
-    struct snapshot_group
-    {
-    };
-    
     /* Sorts snapshot information by date: from most recent (snaps.begin()) to
      the least recent (snaps.end())*/
     inline void sort_basic_data(vector<basic_snapshot_data>& snaps)
@@ -287,6 +284,7 @@ namespace snapshot
         return display;
     }
     
+    /* write the snapshot comparison functions*/
 }
 
 /* it takes a snapshot, and then saves it. */
@@ -325,6 +323,8 @@ inline void manage_snapshots()
     displayBuffer::list_buffer_class buf;
     vector<snapshot::basic_snapshot_data> snaps(snapshot::load_basic_snapshot_data());
     vector<string> display(snapshot::create_snapshot_display(snaps));
+    snapshotSelection::snapshot_selection_class snap_selection;
+    bool temp_b(false);
     
     buf.set_buffer(display);
     display.erase(display.begin(), display.end());
@@ -342,18 +342,40 @@ inline void manage_snapshots()
         }
         for(unsigned int x = 0; x < display.size(); x++)
         {
-            switch(x == buf.pos().part)
+            temp_b = snap_selection.selected(snaps[buf.pos().whole()]);
+            
+            switch(temp_b)
             {
                 case true:
                 {
-                    color::hl::green("[");
+                    ((buf.pos().part == x) ? color::hl::dark_green("[") : color::hl::blue("["));
                 }
                 break;
                 
                 case false:
                 {
-                    cout<< " ";
+                    switch(x == buf.pos().part)
+                    {
+                        case true:
+                        {
+                            color::hl::green("[");
+                        }
+                        break;
+                        
+                        case false:
+                        {
+                            cout<< " ";
+                        }
+                        break;
+                        
+                        default:
+                        {
+                            cout<< " ";
+                        }
+                        break;
+                    }
                 }
+                break;
                 
                 default:
                 {
@@ -364,10 +386,29 @@ inline void manage_snapshots()
             
             cout<< display[x];
             
-            if(x == buf.pos().part)
+            switch(x == buf.pos().part)
             {
-                color::hl::green("]");
+                case true:
+                {
+                    (temp_b ? color::hl::dark_green("]") : color::hl::green("]"));
+                }
+                break;
+                
+                case false:
+                {
+                    if(temp_b)
+                    {
+                        color::hl::blue("]");
+                    }
+                }
+                break;
+                
+                default:
+                {
+                }
+                break;
             }
+            cout<< endl;
         }
         ch = getch();
 
@@ -471,6 +512,21 @@ inline void manage_snapshots()
                         {
                             switch(ch)
                             {
+                                case ' ':
+                                {
+                                    if((snaps.size() > 0) && (snap_selection.snapshots().size() < 3))
+                                    {
+                                        snap_selection.toggle(snaps[buf.pos().whole]);
+                                    }
+                                }
+                                break;
+                                
+                                case '\\':
+                                {
+                                    snap_selection.clear();
+                                }
+                                break;
+                                
                                 default:
                                 {
                                 }
@@ -487,7 +543,10 @@ inline void manage_snapshots()
 
                                 case ENTER_KEY:
                                 {
-                                    //modify the selected snapshot (delete, compare)
+                                    if(snap_selection.snapshots().size() == 2)
+                                    {
+                                        //run comparison
+                                    }
                                 }
                                 break;
 

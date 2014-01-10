@@ -5,8 +5,19 @@
 #include <conio.h>
 #include <vector>
 #include <fstream>
+#include "fsysclass.h"
 #include "global_defines.h"
 #include <iostream>
+
+namespace progOptions
+{
+    /* Program options that can be modified by the user: */
+    struct options_data
+    {
+        string report_folder(fsys_class().gpath());
+        bool use_color(false);
+    } settings;
+}
 
 namespace common
 {
