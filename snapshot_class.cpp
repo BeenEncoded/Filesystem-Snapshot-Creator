@@ -27,7 +27,7 @@ namespace
         if(in.good())
         {
             getline(in, temps, delim);
-            if(!in.fail())
+            if(!in.fail() || (temps.size() == 0))
             {
                 s<< temps;
                 return s.str();
@@ -45,11 +45,15 @@ namespace
     
     inline id_type load_id(ifstream& in)
     {
+        if(common::filesystem::size(in) == 0)
+        {
+            return 0;
+        }
         id_type id(0);
         stringstream ss;
         char delim(DATAMEMBER_DELIM);
         
-        for(short x = 0; x < 3; x++)
+        for(short x = 0; ((x < 3) && in.good()); x++)
         {
             switch(x < 2)
             {
@@ -220,6 +224,7 @@ namespace snapshot
         //scope for boost iterator
         {
             boost_iter it(root);
+            if(!it.at_end()) it++;
             while(!it.at_end())
             {
                 //check to see if the user wants to cancel. (button is pressed)
@@ -255,11 +260,14 @@ namespace snapshot
     vector<id_type> load_ids()
     {
         ifstream in;
-        string filename = SNAPSHOT_FILE;
+        string filename(SNAPSHOT_FILE);
+        if(!fsys_class(filename).is_file())
+        {
+            return vector<id_type>();
+        }
         vector<id_type> ids;
-        
-        in.open(filename.c_str(), ios::in);
-        while(in.good());
+        in.open(filename.c_str(), ios::INFILE);
+        while(in.good())
         {
             ids.push_back(id_type());
             ids.back() = load_id(in);

@@ -11,7 +11,11 @@
 #include "vector_display_buffer.h"
 #include "t_extra.h"
 #include "fsysclass.h"
+<<<<<<< HEAD
 #include "snapshot_selection_class.hpp"
+=======
+
+>>>>>>> Bug-fixes.
 #include <iostream>
 #include <exception>
 #include <windows.h>
@@ -257,7 +261,7 @@ namespace snapshot
         
     }
     
-    vector<string> create_snapshot_display(const vector<snapshot_class>& snaps)
+    vector<string> create_snapshot_display(vector<basic_snapshot_data>& snaps)
     {
         vector<string> display;
         if(snaps.size() > 0)
@@ -338,6 +342,11 @@ inline void manage_snapshots()
         cout<< endl;
         for(short x = 0; x < 3; x++)
         {
+            cout<< endl;
+        }
+        if(snaps.size() == 0)
+        {
+            center("NO SNAPSHOTS");
             cout<< endl;
         }
         for(unsigned int x = 0; x < display.size(); x++)
@@ -485,9 +494,9 @@ inline void manage_snapshots()
                         
                         case DELETE_KEY:
                         {
-                            if(is_sure(("Do you want to delete snapshot taken on " + snaps[buf.pos().whole].get_timestamp())))
+                            if(is_sure(("Do you want to delete snapshot taken on " + snaps[buf.pos().whole].t)))
                             {
-                                delete_snapshot(snaps[buf.pos().whole].gid());
+                                snapshot::delete_snapshot(snaps[buf.pos().whole].id);
                                 snaps.erase((snaps.begin() + buf.pos().whole));
                             }
                             color::set::blackwhite();
@@ -609,7 +618,18 @@ inline void main_menu()
         {
             case '1':
             {
-                take_snapshot();
+                try
+                {
+                        take_snapshot();
+                }
+                catch(const exception &e)
+                {
+                    cls();
+                    center(e.what());
+                    cout<< endl;
+                    wait();
+                    abort();
+                }
                 color::set::blackwhite();
             }
             break;

@@ -35,7 +35,7 @@ namespace snapshot
     
     inline bool is_id(const id_type& id, const std::vector<id_type>& ids)
     {
-        for(auto i : ids) if(i == id) return true;
+        for(id_type i : ids) if(id == i) return true;
         return false;
     }
     
@@ -199,7 +199,8 @@ namespace snapshot
         /* Returns true if it contains data.  False if not.*/
         static bool is_valid(const snapshot_class& snap)
         {
-                return ((snap.get_pathList().size() > 0) && (snap.get_timestamp().size() > 0));
+                return ((snap.get_pathList().size() > 0) && (snap.get_timestamp().size() > 0) && 
+                        (snap.gid() > 0));
         }
         
         /* Retrieves the id from a line that should contain a snapshot in a file.

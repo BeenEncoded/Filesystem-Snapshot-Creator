@@ -2,6 +2,8 @@
 ## Eclipse
 #################
 
+*.inc
+*.dep.inc
 *.txt
 *.sh
 *.snap
