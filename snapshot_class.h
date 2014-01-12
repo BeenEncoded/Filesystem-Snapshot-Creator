@@ -140,7 +140,7 @@ namespace snapshot
                 return;
             }
             std::stringstream ss;
-            std::string temps;
+            std::string temps("");
             char *ch(new char()), delim(2);
             
             //scope for temporary stuff:
@@ -151,25 +151,21 @@ namespace snapshot
                 
                 //because we will be dealing with a massive ammount of data (about 200,000 strings per snapshot is expected)
                 //we want to be memory efficient here
-                getline(in, temps);
-                if(temps.size() > 0)
+                if(common::filesystem::loadline(in, ss))
                 {
-                    for(std::string::iterator it = temps.begin(); it != temps.end();)
-                    {
-                        ss<< *it;
-                        it = temps.erase(it);
-                    }
                     ss>> *tempsnap;
+                    ss.str("");
                     bsd.pathcount = tempsnap->get_pathList().size();
                     delete tempsnap;
                     
                     //we jump back to our starting position so that we can sontinue the function
                     in.seekg(*tpos);
+                    in.clear();
                     delete tpos;
                 }
             } //scope end
             
-            while(((in.get(*ch), *ch) != delim))
+            while(((in.get(*ch), *ch) != delim) && in.good())
             {
             }
             delete ch;

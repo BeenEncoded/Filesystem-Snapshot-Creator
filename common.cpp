@@ -233,4 +233,54 @@ namespace common
         
     }
     
+    namespace filesystem
+    {
+        string loadline(istream& in, const char& delim)
+        {
+            stringstream s;
+            string temps;
+            if(in.good())
+            {
+                getline(in, temps, delim);
+                if(!in.fail() || (temps.size() == 0))
+                {
+                    s<< temps;
+                    return s.str();
+                }
+            }
+            s.str("");
+            s<< string(GSTRING_CANCEL);
+            return s.str();
+        }
+        
+        string loadline(istream& in)
+        {
+            return loadline(in, '\n');
+        }
+        
+        bool loadline(istream& in, stringstream& ss, const char& delim)
+        {
+            ss.str("");
+            if(!in.good())
+            {
+                return false;
+            }
+            char ch;
+            do
+            {
+                in.get(ch);
+                if(ch != delim)
+                {
+                    ss<< ch;
+                }
+            }
+            while((in.good()) && (ch != delim));
+            return true;
+        }
+        
+        bool loadline(istream& in, stringstream& ss)
+        {
+            return loadline(in, ss, '\n');
+        }
+    }
 }

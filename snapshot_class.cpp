@@ -28,31 +28,7 @@ inline type2 conv(const type1& t1)
 }
 
 namespace
-{    
-    
-    inline string loadline(istream& in, const char& delim)
-    {
-        stringstream s;
-        string temps;
-        if(in.good())
-        {
-            getline(in, temps, delim);
-            if(!in.fail() || (temps.size() == 0))
-            {
-                s<< temps;
-                return s.str();
-            }
-        }
-        s.str("");
-        s<< string(GSTRING_CANCEL);
-        return s.str();
-    }
-    
-    inline string loadline(istream& in)
-    {
-        return loadline(in, '\n');
-    }
-    
+{
     inline id_type load_id(ifstream& in)
     {
         id_type id(0);
@@ -65,18 +41,17 @@ namespace
             {
                 case true:
                 {
-                    if((loadline(in, delim) == GSTRING_CANCEL) || !in.good())
+                    if(!common::filesystem::loadline(in, ss, delim) || !in.good())
                     {
                         return 0;
                     }
+                    ss.str("");
                 }
                 break;
                 
                 case false:
                 {
-                    ss.str("");
-                    ss<< loadline(in, delim);
-                    if(ss.str() == GSTRING_CANCEL)
+                    if(!common::filesystem::loadline(in, ss, delim))
                     {
                         return 0;
                     }
@@ -209,7 +184,7 @@ namespace snapshot
         
         for(short x = 0; x < 3; x++)
         {
-            temps[x]<< loadline(in, delim);
+            common::filesystem::loadline(in, temps[x], delim);
             if(temps[x].str() == GSTRING_CANCEL)
             {
                 return in;

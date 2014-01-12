@@ -162,17 +162,7 @@ namespace snapshot
         in.open(filename.c_str(), ios::INFILE);
         while(in.good())
         {
-            ss.str("");
-            getline(in, temps);
-            if(temps.size() == 0)
-            {
-                continue;
-            }
-            for(string::iterator it = temps.begin(); it != temps.end();)
-            {
-                ss<< *it;
-                it = temps.erase(it);
-            }
+            common::filesystem::loadline(in, ss);
             snaps.push_back(basic_snapshot_data());
             snaps.back().t = chrono_date().gasc_time();
             snaps.back().id = 0;
@@ -729,6 +719,10 @@ inline void main_menu()
             
             case '2':
             {
+                cls();
+                for(short x = 0; x < 10; x++) cout<< endl;
+                center("Loading...");
+                cout<< endl;
                 manage_snapshots();
                 color::set::blackwhite();
             }

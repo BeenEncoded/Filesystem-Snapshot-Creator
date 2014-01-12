@@ -6,10 +6,11 @@
 #include <conio.h>
 #include <vector>
 #include <fstream>
+#include <sstream>
+#include <iostream>
 
 #include "fsysclass.h"
 #include "global_defines.h"
-#include <iostream>
 
 namespace common
 {
@@ -124,6 +125,10 @@ namespace common
             return s;
         }
         
+        std::string loadline(std::istream&, const char&);
+        std::string loadline(std::istream&);
+        bool loadline(std::istream&, std::stringstream&, const char&);
+        bool loadline(std::istream&, std::stringstream&);
     }
     
 }
