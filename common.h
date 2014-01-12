@@ -11,16 +11,6 @@
 #include "global_defines.h"
 #include <iostream>
 
-namespace
-{
-    /* Program options that can be modified by the user: */
-    struct options_data
-    {
-        std::string report_folder = fsys_class().gpath();
-        bool use_color = false;
-    } settings;
-}
-
 namespace common
 {
     
