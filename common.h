@@ -1,21 +1,23 @@
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
+#include <iostream>
 #include <string>
 #include <windows.h>
 #include <conio.h>
 #include <vector>
 #include <fstream>
+
 #include "fsysclass.h"
 #include "global_defines.h"
 #include <iostream>
 
-namespace progOptions
+namespace
 {
     /* Program options that can be modified by the user: */
     struct options_data
     {
-        string report_folder(fsys_class().gpath());
-        bool use_color(false);
+        std::string report_folder = fsys_class().gpath();
+        bool use_color = false;
     } settings;
 }
 

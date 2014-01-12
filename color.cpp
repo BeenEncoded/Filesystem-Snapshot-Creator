@@ -12,7 +12,7 @@ namespace
     
     inline void setcol(const eku::concol& text, const eku::concol& back)
     {
-        if((USECOLOR) && (progOptions::settings.use_color))
+        if((USECOLOR) && (settings.use_color))
         {
             if((eku::textcol != text) || (eku::backcol != back))
             {
@@ -23,7 +23,7 @@ namespace
     
     inline void highlight(const eku::concol& text, const eku::concol& back, const string& s)
     {
-        if((USECOLOR) && (progOptions::settings.use_color))
+        if((USECOLOR) && (settings.use_color))
         {
             eku::concol deftext(eku::textcol), defback(eku::backcol);
             setcol(text, back);
@@ -35,7 +35,7 @@ namespace
     //center-highlight
     inline void chighlight(const eku::concol& text, const eku::concol& back, const string& s)
     {
-        if((USECOLOR) && (progOptions::settings.use_color))
+        if((USECOLOR) && (settings.use_color))
         {
             int cent = (int(HCENTER) - (s.size() / 2));
             if(cent < 0)
@@ -58,7 +58,7 @@ namespace color
     
     void initialize()
     {
-        if((USECOLOR) && (progOptions::settings.use_color))
+        if((USECOLOR) && (settings.use_color))
         {
             eku::concolinit();
         }

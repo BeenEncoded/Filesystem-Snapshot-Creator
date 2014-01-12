@@ -1,6 +1,7 @@
 #ifndef SNAPSHOT_SELECTION_CLASS_HPP_INCLUDED
 #define SNAPSHOT_SELECTION_CLASS_HPP_INCLUDED
 #include <vector>
+#include <string>
 #include "snapshot_class.h"
 #include "global_defines.h"
 
@@ -46,7 +47,7 @@ namespace snapshotSelection
             return this->snaps;
         }
         
-        bool selected(const snapshot::basic_snapshot_data& s) const
+        bool selected(const snapshot::basic_snapshot_data &s) const
         {
             if(this->snaps.size() == 0)
             {
@@ -62,15 +63,15 @@ namespace snapshotSelection
             return false;
         }
         
-        void toggle(const snapshot::basic_snapshot_data& s)
+        void toggle(snapshot::basic_snapshot_data &s)
         {
-            switch(this->selected(s.id))
+            switch(this->selected(s))
             {
                 case true:
                 {
-                    for(std::vector::iterator it = this->snaps.begin(); it != this->snaps.end(); )
+                    for(std::vector<snapshot::basic_snapshot_data*>::iterator it = this->snaps.begin(); it != this->snaps.end(); )
                     {
-                        if(it->id == s.id)
+                        if((*it)->id == s.id)
                         {
                             it = this->snaps.erase(it);
                             continue;

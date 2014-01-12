@@ -11,11 +11,8 @@
 #include "vector_display_buffer.h"
 #include "t_extra.h"
 #include "fsysclass.h"
-<<<<<<< HEAD
 #include "snapshot_selection_class.hpp"
-=======
 
->>>>>>> Bug-fixes.
 #include <iostream>
 #include <exception>
 #include <windows.h>
@@ -300,7 +297,7 @@ inline void take_snapshot()
     snapshot::snapshot_class snap;
     bool b(false);
     
-    snap = snap.take_snapshot(fsys_class().gpath());
+    snap = snap.take_snapshot();
     if(snapshot::snapshot_class::is_valid(snap))
     {
         ofstream out;
@@ -351,7 +348,7 @@ inline void manage_snapshots()
         }
         for(unsigned int x = 0; x < display.size(); x++)
         {
-            temp_b = snap_selection.selected(snaps[buf.pos().whole()]);
+            temp_b = snap_selection.selected(snaps[buf.pos().whole]);
             
             switch(temp_b)
             {
