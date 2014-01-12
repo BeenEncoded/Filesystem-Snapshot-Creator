@@ -544,9 +544,18 @@ bool is_file_supliment(const string& path)
 bool is_folder_supliment(const string& path)
 {
     using namespace boost;
-    filesystem::path p = path;
     system::error_code err;
-    return boost::filesystem::is_directory(p, err);
+    bool b;
+    try
+    {
+        b = filesystem::is_directory(filesystem::path(path), err);
+    }
+    catch(const std::exception& e)
+    {
+        cout<< e.what();
+        return false;
+    }
+    return b;
 }
 
 bool fsys_class::is_file()
@@ -556,7 +565,7 @@ bool fsys_class::is_file()
 
 bool fsys_class::is_folder()
 {
-    return is_folder_supliment(fsys_class::path);
+    return is_folder_supliment(this->path);
 }
 
 vector<string> sub_stuff_suppliment(const string& parent)

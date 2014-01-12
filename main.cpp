@@ -347,7 +347,7 @@ namespace snapshot
         created = differences(after, before);
         deleted = differences(before, after);
         
-        out.open(string(settings.report_folder + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt").c_str(), ios::OUTFILE);
+        out.open(string(string(REPORT_FOLDER) + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt").c_str(), ios::OUTFILE);
         
         out<< "Snapshot time frame: ["<< chrono_date(snap1.get_timestamp()).std_time_disp()<< "], ["<< 
                 chrono_date(snap2.get_timestamp()).std_time_disp()<< "]"<< endl;

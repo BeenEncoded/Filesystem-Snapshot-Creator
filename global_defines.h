@@ -42,6 +42,7 @@
 //------------------------------------------------------------------------------
 
 #define SNAPSHOT_FILE (fsys_class().gpath() + "\\Your Snapshots.snap")
+#define REPORT_FOLDER (fsys_class().gpath() + "\\Reports")
 
 /* File stream defines.  These can be used to easily change the way the streams
  are opened.*/
