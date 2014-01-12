@@ -183,6 +183,7 @@ namespace snapshot
                 snaps.pop_back();
             }
         }
+        in.close();
         return snaps;
     }
     
@@ -364,24 +365,49 @@ inline void take_snapshot()
     using namespace common;
     color::set::greenblue();
     
+    for(short x = 0; x < 3; x++) cout<< endl;
+    center("Snapshot in progress...");
+    cout<< endl;
+    
     snapshot::snapshot_class snap;
     bool b(false);
     
-    snap = snap.take_snapshot();
-    if(snapshot::snapshot_class::is_valid(snap))
+    snap.take_snapshot();
+    switch(snapshot::snapshot_class::is_valid(snap))
     {
-        ofstream out;
-        ifstream in;
-        in.open(string(SNAPSHOT_FILE).c_str(), ios::INFILE);
-        b = (filesystem::size(in) > 0);
-        in.close();
-        out.open(string(SNAPSHOT_FILE).c_str(), ios::app);
-        if(b)
+        case true:
         {
-            out<< endl;
+            ofstream out;
+            
+            ifstream in;
+            in.open(string(SNAPSHOT_FILE).c_str(), ios::INFILE);
+            b = (filesystem::size(in) > 0);
+            in.close();
+            
+            out.open(string(SNAPSHOT_FILE).c_str(), ios::app);
+            if(b)
+            {
+                out<< endl;
+            }
+            out<< snap;
+            out.close();
         }
-        out<< snap;
-        out.close();
+        break;
+        
+        case false:
+        {
+        }
+        
+        default:
+        {
+            cls();
+            for(short x = 0; x < 5; x++) cout<< endl;
+            center("Error: Could not take a valid snapshot!");
+            cout<< endl;
+            wait();
+            cls();
+        }
+        break;
     }
 }
 

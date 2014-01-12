@@ -98,9 +98,10 @@ bool boost_iter::next()
     {
         return true;
     }
+    boost::system::error_code err;
     if(!(this->at_end()))
     {
-        if(boost::filesystem::is_directory(this->it->path()) && boost::filesystem::is_symlink(this->it->path()))
+        if(boost::filesystem::is_directory(this->it->path(), err) && boost::filesystem::is_symlink(this->it->path(), err))
         {
             this->it.no_push();
         }

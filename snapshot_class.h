@@ -105,8 +105,8 @@ namespace snapshot
             this->timestamp.erase();
         }
         
-        snapshot_class take_snapshot() const;
-        snapshot_class take_snapshot(const std::string&) const;
+        void take_snapshot();
+        void take_snapshot(const std::string&);
         
         /** Getters. */
         const time_type& get_timestamp() const

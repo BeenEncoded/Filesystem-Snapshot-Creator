@@ -17,6 +17,16 @@ using namespace std;
 #define STRING_DELIM 1
 #define DATAMEMBER_DELIM 2
 
+template<class type1, class type2>
+inline type2 conv(const type1& t1)
+{
+    type2 t2;
+    stringstream ss;
+    ss<< t1;
+    ss>> t2;
+    return t2;
+}
+
 namespace
 {    
     
@@ -112,6 +122,22 @@ namespace
         return false;
     }
     
+    /* Thoroushly checks to make sure the string is a drive 
+     letter.*/
+    inline bool is_drive_letter(const string& s)
+    {
+        if(s.size() == string("A:\\").size())
+        {
+            for(char ch = 'a'; ch < 'z'; ch++)
+            {
+                if(tolower(s[0]) == ch)
+                {
+                    return bool(string(conv<char, string>(ch) + ":\\") == common::lcase(s));
+                }
+            }
+        }
+        return false;
+    }
     
     //-----------------------------------------
     
@@ -205,17 +231,15 @@ namespace snapshot
     /* Returns a snapshot class that contains the snapshot.  Argument passed is
      the folder from which to take a snapshot of.  The default is the entire C drive. 
      this is also when the object is assigned an ID.*/
-    snapshot_class snapshot_class::take_snapshot(const string& root) const
+    void snapshot_class::take_snapshot(const string& root)
     {
         if(!fsys_class(root).is_folder())
         {
-            return snapshot_class();
+            return;
         }
+        this->clear();
         
         display_message();
-        
-        snapshot_class tempsnap, tempsnap2;
-        pathList_type newpathlist({});
         
         //scope for boost iterator
         {
@@ -226,32 +250,21 @@ namespace snapshot
                 //check to see if the user wants to cancel. (button is pressed)
                 if(snapshot_interrupt())
                 {
-                    return snapshot_class();
+                    return;
                 }
-                newpathlist.push_back(it.gdir());
+                this->path_list.push_back(it.gdir());
                 it++;
             }
         }
-        tempsnap = snapshot_class(newpathlist, chrono_date().gasc_time());
-        
-        //now to assign the id:
-        tempsnap.id = newid();
-        /*
-        tempsnap2 = *this; //save this instance temporarily
-        *this = tempsnap; //because we need to modify it's private members, we need to do this...
+        this->timestamp = chrono_date().gasc_time();
         this->id = newid();
-        tempsnap = *this;
-        *this = tempsnap2;*/
-        
-        newpathlist.erase(newpathlist.begin(), newpathlist.end());
-        return tempsnap;
     }
     
     /* Returns a snapshot class that contains the snapshot.  Argument passed is
      the folder from which to take a snapshot of.  The default is the entire C drive. */
-    snapshot_class snapshot_class::take_snapshot() const
+    void snapshot_class::take_snapshot()
     {
-        return this->take_snapshot("C:\\");
+        this->take_snapshot(string("C:\\"));
     }
     
     vector<id_type> load_ids()

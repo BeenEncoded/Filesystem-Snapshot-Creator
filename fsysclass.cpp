@@ -543,14 +543,14 @@ bool is_file_supliment(const string& path)
 
 bool is_folder_supliment(const string& path)
 {
-    using namespace boost;
-    system::error_code err;
+    boost::system::error_code err;
+    boost::filesystem::path p(path);
     bool b;
     try
     {
-        b = filesystem::is_directory(filesystem::path(path), err);
+        b = boost::filesystem::is_directory(p, err);
     }
-    catch(const std::exception& e)
+    catch(const exception& e)
     {
         cout<< e.what();
         return false;

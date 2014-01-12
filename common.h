@@ -14,15 +14,6 @@
 namespace common
 {
     
-    inline void wait()
-    {
-        for(short x = 0; x < 3; x++)
-        {
-            std::cout<< std::endl;
-        }
-        std::cout<< "Press any key to continue..."<< std::endl;
-    }
-    
     inline void cl()
     {
         Sleep(10);
@@ -32,11 +23,33 @@ namespace common
         }
     }
     
+    inline void wait()
+    {
+        for(short x = 0; x < 3; x++)
+        {
+            std::cout<< std::endl;
+        }
+        std::cout<< "Press any key to continue..."<< std::endl;
+        cl();
+        getch();
+        cl();
+    }
+    
     void cls();
     bool is_number(const char&);
     bool is_letter(const char&);
     bool is_special(const char&);
     bool is_char(const char&);
+    
+    inline std::string lcase(const std::string& s)
+    {
+        std::string temps(s);
+        for(std::string::iterator it = temps.begin(); it != temps.end(); it++)
+        {
+            *it = tolower(*it);
+        }
+        return temps;
+    }
     
     inline bool string_is_int(const std::string& s)
     {
