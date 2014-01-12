@@ -300,7 +300,7 @@ inline void take_snapshot()
     snapshot::snapshot_class snap;
     bool b(false);
     
-    snap = snap.take_snapshot();
+    snap = snap.take_snapshot(fsys_class().gpath());
     if(snapshot::snapshot_class::is_valid(snap))
     {
         ofstream out;
@@ -620,7 +620,7 @@ inline void main_menu()
             {
                 try
                 {
-                        take_snapshot();
+                    take_snapshot();
                 }
                 catch(const exception &e)
                 {

@@ -45,10 +45,6 @@ namespace
     
     inline id_type load_id(ifstream& in)
     {
-        if(common::filesystem::size(in) == 0)
-        {
-            return 0;
-        }
         id_type id(0);
         stringstream ss;
         char delim(DATAMEMBER_DELIM);
@@ -246,6 +242,7 @@ namespace snapshot
         this->id = newid();
         tempsnap = *this;
         *this = tempsnap2;*/
+        
         newpathlist.erase(newpathlist.begin(), newpathlist.end());
         return tempsnap;
     }
@@ -267,6 +264,10 @@ namespace snapshot
         }
         vector<id_type> ids;
         in.open(filename.c_str(), ios::INFILE);
+        if(common::filesystem::size(in) == 0)
+        {
+            return vector<id_type>();
+        }
         while(in.good())
         {
             ids.push_back(id_type());
