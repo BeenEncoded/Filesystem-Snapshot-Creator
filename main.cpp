@@ -360,7 +360,6 @@ inline void take_snapshot()
     cout<< endl;
     
     snapshot::snapshot_class snap;
-    bool b(false);
     
     snap.take_snapshot();
     switch(snapshot::snapshot_class::is_valid(snap))
@@ -368,18 +367,8 @@ inline void take_snapshot()
         case true:
         {
             ofstream out;
-            
-            ifstream in;
-            in.open(string(SNAPSHOT_FILE).c_str(), ios::INFILE);
-            b = (filesystem::size(in) > 0);
-            in.close();
-            
             out.open(string(SNAPSHOT_FILE).c_str(), ios::app);
-            if(b)
-            {
-                out<< endl;
-            }
-            out<< snap;
+            out<< snap<< '\n';
             out.close();
         }
         break;
@@ -588,8 +577,6 @@ inline void manage_snapshots()
 
                         default:
                         {
-                            cout<< "int(control) = "<< int(control)<< endl;
-                            wait();
                         }
                         break;
                     }

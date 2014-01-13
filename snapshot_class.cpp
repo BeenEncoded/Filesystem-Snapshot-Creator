@@ -132,13 +132,13 @@ namespace snapshot
     istream& operator>>(istream& in, pathList_type paths)
     {
         paths.erase(paths.begin(), paths.end());
-        string temps("");
         while(in.good())
         {
-            getline(in, temps, char(STRING_DELIM));
-            if(temps.size() > 0)
+            paths.push_back(string());
+            getline(in, paths.back(), char(STRING_DELIM));
+            if(paths.back().size() == 0)
             {
-                paths.push_back(temps);
+                paths.pop_back();
             }
         }
         return in;
@@ -180,24 +180,58 @@ namespace snapshot
     {
         this->clear();
         char delim(DATAMEMBER_DELIM);
-        stringstream temps[3];
+        stringstream *ss(new stringstream());
         
         for(short x = 0; x < 3; x++)
         {
-            common::filesystem::loadline(in, temps[x], delim);
-            if(temps[x].str() == GSTRING_CANCEL)
+            if(!common::filesystem::loadline(in, *ss, delim))
             {
+                if(ss != NULL)
+                {
+                    delete ss;
+                    ss = NULL;
+                }
                 return in;
             }
+            if(in.good())
+            {
+                switch(x)
+                {
+                    case 0:
+                    {
+                        (*ss)>> pathList_type(this->path_list);
+                    }
+                    break;
+
+                    case 1:
+                    {
+                        (*ss)>> this->timestamp;
+                    }
+                    break;
+
+                    case 2:
+                    {
+                        (*ss)>> this->id;
+                    }
+                    break;
+
+                    default:
+                    {
+                        if(ss != NULL)
+                        {
+                            delete ss;
+                            ss = NULL;
+                            ss = new stringstream();
+                        }
+                    }
+                    break;
+                }
+            }
         }
-        
-        temps[0]>> pathList_type(this->path_list);
-        temps[1]>> this->timestamp;
-        temps[2]>> this->id;
-        
-        for(short x = 0; x < 3; x++)
+        if(ss != NULL)
         {
-            temps[x].str("");
+            delete ss;
+            ss = NULL;
         }
         
         return in;

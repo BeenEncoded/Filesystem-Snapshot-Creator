@@ -139,9 +139,8 @@ namespace snapshot
             {
                 return;
             }
-            std::stringstream ss;
             std::string temps("");
-            char *ch(new char()), delim(2);
+            char *ch(new char());
             
             //scope for temporary stuff:
             {
@@ -151,11 +150,12 @@ namespace snapshot
                 
                 //because we will be dealing with a massive ammount of data (about 200,000 strings per snapshot is expected)
                 //we want to be memory efficient here
-                if(common::filesystem::loadline(in, ss))
+                if(in.good())
                 {
-                    ss>> *tempsnap;
-                    ss.str("");
+                    in>> *tempsnap;
                     bsd.pathcount = tempsnap->get_pathList().size();
+                    bsd.id = tempsnap->gid();
+                    bsd.t = tempsnap->get_timestamp();
                     delete tempsnap;
                     
                     //we jump back to our starting position so that we can sontinue the function
@@ -164,32 +164,7 @@ namespace snapshot
                     delete tpos;
                 }
             } //scope end
-            
-            while(((in.get(*ch), *ch) != delim) && in.good())
-            {
-            }
             delete ch;
-            
-            if(in.good())
-            {
-                std::getline(in, temps, delim);
-                if(!in.fail())
-                {
-                    ss<< temps;
-                    ss>> bsd.t;
-                    ss.str("");
-                }
-            }
-            if(in.good())
-            {
-                std::getline(in, temps, delim);
-                if(!in.fail())
-                {
-                    ss<< temps;
-                    ss>> bsd.id;
-                    ss.str("");
-                }
-            }
         }
         
         /* Returns true if it contains data.  False if not.*/
