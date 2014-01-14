@@ -127,30 +127,34 @@ namespace snapshot
             }
             throw string("inline basic_snapshot_data rec_sort_basic_data(vector<basic_snapshot_data>& snaps) ::: ERROR:" + 
                     string(" Sort error resulted in over-passing the end of the vector!"));
+            abort();
         }
         basic_snapshot_data tempsnap;
         
         if(snaps.size() > 1)
         {
-            tempsnap = snaps[0];
+            //move the first basic_snapshot_data into a temporary storage
+            tempsnap = *snaps.begin();
+            snaps.erase(snaps.begin());
+            
             /* Get the most recent snapdata*/
-            for(unsigned int x = 1; x < snaps.size(); x++)
+            for(vector<snapshot::basic_snapshot_data>::iterator it = snaps.begin(); it != snaps.end(); it++)
             {
-                if((snaps[x].t.size() != chrono_date().gasc_time().size()) || 
+                if((it->t.size() != chrono_date().gasc_time().size()) || 
                         (tempsnap.t.size() != chrono_date().gasc_time().size()))
                 {
                     throw "ERROR: Invalid Time Value!!";
-                    return;
+                    abort();
                 }
-                if(chrono_date(snaps[x].t) < chrono_date(tempsnap.t))
+                if(chrono_date(it->t) < chrono_date(tempsnap.t))
                 {
-                    tempsnap = snaps[x];
+                    swap(tempsnap, *it);
                 }
             }
             
             //recurse!
             sort_basic_data(snaps);
-            snaps.insert(snaps.begin(), tempsnap);
+            snaps.insert((snaps.begin() + (snaps.size() - 1)), tempsnap);
         }
     }
     
@@ -449,7 +453,7 @@ inline void manage_snapshots()
         }
         for(unsigned int x = 0; x < display.size(); x++)
         {
-            temp_b = snap_selection.selected(snaps[buf.pos().whole]);
+            temp_b = snap_selection.selected(snaps[((buf.pos().whole - buf.pos().part) + x)]);
             
             switch(temp_b)
             {
@@ -599,6 +603,11 @@ inline void manage_snapshots()
                                 center("Please wait...");
                                 cout<< endl;
                                 
+                                if(snap_selection.selected(snaps[buf.pos().whole]))
+                                {
+                                    snap_selection.toggle(snaps[buf.pos().whole]);
+                                }
+                                
                                 snapshot::delete_snapshot(snaps[buf.pos().whole].id);
                                 snaps.erase((snaps.begin() + buf.pos().whole));
                                 buf.set_buffer(snapshot::create_snapshot_display(snaps));
@@ -626,9 +635,27 @@ inline void manage_snapshots()
                             {
                                 case ' ':
                                 {
-                                    if((snaps.size() > 0) && (snap_selection.snapshots().size() < 3))
+                                    switch(snap_selection.selected(snaps[buf.pos().whole]))
                                     {
-                                        snap_selection.toggle(snaps[buf.pos().whole]);
+                                        case true:
+                                        {
+                                            snap_selection.toggle(snaps[buf.pos().whole]);
+                                        }
+                                        break;
+
+                                        case false:
+                                        {
+                                            if(snap_selection.snapshots().size() < 2)
+                                            {
+                                                snap_selection.toggle(snaps[buf.pos().whole]);
+                                            }
+                                        }
+                                        break;
+
+                                        default:
+                                        {
+                                        }
+                                        break;
                                     }
                                 }
                                 break;

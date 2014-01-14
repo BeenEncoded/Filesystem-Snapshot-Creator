@@ -168,30 +168,22 @@ namespace snapshot
         in.get(ch);
         
         //load_timestamp:
-        if(in.good())
+        if(common::filesystem::loadline(in, ss, snap_delim))
         {
-            if(common::filesystem::loadline(in, ss, snap_delim))
-            {
-                this->timestamp = ss.str();
-            }
+            this->timestamp = ss.str();
         }
         
         //load id:
-        if(in.good())
+        if(common::filesystem::loadline(in, ss, snap_delim))
         {
-            if(common::filesystem::loadline(in, ss, snap_delim))
-            {
-                ss>> this->id;
-            }
+            ss>> this->id;
         }
         
-        if(in.good())
+        //skip the pathcount information used for basic-data loading
+        if(!common::filesystem::loadline(in, ss, snap_delim))
         {
-            if(!common::filesystem::loadline(in, ss, snap_delim))
-            {
-                this->clear();
-                return in;
-            }
+            this->clear();
+            return in;
         }
         
         //load path_list directly:

@@ -153,7 +153,7 @@ namespace snapshot
             {
                 ss>> bsd.pathcount;
             }
-            ss.str("");
+            
         }
         
         /* Returns true if it contains data.  False if not.*/
