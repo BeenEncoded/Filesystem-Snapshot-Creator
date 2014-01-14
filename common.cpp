@@ -266,16 +266,18 @@ namespace common
                 return false;
             }
             char ch;
+            bool temp_b(false);
             do
             {
                 in.get(ch);
                 if(ch != delim)
                 {
                     ss<< ch;
+                    temp_b = true;
                 }
             }
             while((in.good()) && (ch != delim));
-            return true;
+            return temp_b;
         }
         
         bool loadline(istream& in, stringstream& ss)

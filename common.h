@@ -109,7 +109,7 @@ namespace common
     
     namespace filesystem
     {
-        inline unsigned int size(std::ifstream& in)
+        inline unsigned int size(std::istream& in)
         {
             if(!in.good())
             {

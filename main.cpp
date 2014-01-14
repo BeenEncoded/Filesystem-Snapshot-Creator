@@ -133,10 +133,15 @@ namespace snapshot
         if(snaps.size() > 1)
         {
             tempsnap = snaps[0];
-            
             /* Get the most recent snapdata*/
             for(unsigned int x = 1; x < snaps.size(); x++)
             {
+                if((snaps[x].t.size() != chrono_date().gasc_time().size()) || 
+                        (tempsnap.t.size() != chrono_date().gasc_time().size()))
+                {
+                    throw "ERROR: Invalid Time Value!!";
+                    return;
+                }
                 if(chrono_date(snaps[x].t) < chrono_date(tempsnap.t))
                 {
                     tempsnap = snaps[x];
@@ -156,24 +161,30 @@ namespace snapshot
     {
         vector<basic_snapshot_data> snaps;
         ifstream in;
+        string filename(SNAPSHOT_FILE);
         stringstream ss;
-        string temps(""), filename(SNAPSHOT_FILE);
         
         in.open(filename.c_str(), ios::INFILE);
         while(in.good())
         {
-            common::filesystem::loadline(in, ss);
             snaps.push_back(basic_snapshot_data());
-            snaps.back().t = chrono_date().gasc_time();
-            snaps.back().id = 0;
-            snaps.back().pathcount = 0;
-            snapshot_class::load_basic(ss, snaps.back());
-            if(snaps.back().id == 0)
+            if(common::filesystem::loadline(in, ss))
             {
-                snaps.pop_back();
+                snapshot::snapshot_class::load_basic(ss, snaps.back());
             }
         }
         in.close();
+        for(vector<snapshot::basic_snapshot_data>::iterator it = snaps.begin(); 
+                it != snaps.end(); )
+        {
+            if(it->id == 0)
+            {
+                it = snaps.erase(it);
+                continue;
+            }
+            it++;
+        }
+        
         return snaps;
     }
     
@@ -269,7 +280,22 @@ namespace snapshot
             }
             in.close();
             out.close();
-            fsys_class(*tempfile).del();
+            if(fsys_class(*tempfile).del() == 1)
+            {
+                tempfile->erase();
+                snapfile->erase();
+                delete tempfile;
+                delete snapfile;
+                delete ch;
+                
+                common::cls();
+                for(short x = 0; x < 10; x++) cout<< endl;
+                common::center("ERROR: unable to delete temporary file!");
+                cout<< endl;
+                common::wait();
+                return;
+            }
+                
             tempfile->erase();
             snapfile->erase();
             delete tempfile;
@@ -361,7 +387,7 @@ inline void take_snapshot()
     
     snapshot::snapshot_class snap;
     
-    snap.take_snapshot();
+    snap.take_snapshot(fsys_class().gpath());
     switch(snapshot::snapshot_class::is_valid(snap))
     {
         case true:
@@ -568,8 +594,15 @@ inline void manage_snapshots()
                         {
                             if(is_sure(("Do you want to delete snapshot taken on " + snaps[buf.pos().whole].t)))
                             {
+                                cls();
+                                for(short x = 0; x < 10; x++) cout<< endl;
+                                center("Please wait...");
+                                cout<< endl;
+                                
                                 snapshot::delete_snapshot(snaps[buf.pos().whole].id);
                                 snaps.erase((snaps.begin() + buf.pos().whole));
+                                buf.set_buffer(snapshot::create_snapshot_display(snaps));
+                                display = buf.buffer();
                             }
                             color::set::blackwhite();
                         }

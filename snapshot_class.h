@@ -131,40 +131,29 @@ namespace snapshot
         /* Loads basic information about a snapshot. Namely, the timestamp and the id. */
         static void load_basic(std::istream& in, basic_snapshot_data& bsd)
         {
-            common::input::ccin();
-            bsd.t.erase();
             bsd.id = 0;
             bsd.pathcount = 0;
+            bsd.t.erase();
             if(!in.good())
             {
                 return;
             }
-            std::string temps("");
-            char *ch(new char());
+            std::stringstream ss;
+            char delim(2);
             
-            //scope for temporary stuff:
+            if(common::filesystem::loadline(in, ss, delim))
             {
-                //some temporary information
-                snapshot_class *tempsnap(new snapshot_class());
-                std::ifstream::pos_type *tpos(new std::ifstream::pos_type(in.tellg()));
-                
-                //because we will be dealing with a massive ammount of data (about 200,000 strings per snapshot is expected)
-                //we want to be memory efficient here
-                if(in.good())
-                {
-                    in>> *tempsnap;
-                    bsd.pathcount = tempsnap->get_pathList().size();
-                    bsd.id = tempsnap->gid();
-                    bsd.t = tempsnap->get_timestamp();
-                    delete tempsnap;
-                    
-                    //we jump back to our starting position so that we can sontinue the function
-                    in.seekg(*tpos);
-                    in.clear();
-                    delete tpos;
-                }
-            } //scope end
-            delete ch;
+                bsd.t = ss.str();
+            }
+            if(common::filesystem::loadline(in, ss, delim))
+            {
+                ss>> bsd.id;
+            }
+            if(common::filesystem::loadline(in, ss, delim))
+            {
+                ss>> bsd.pathcount;
+            }
+            ss.str("");
         }
         
         /* Returns true if it contains data.  False if not.*/
@@ -178,44 +167,23 @@ namespace snapshot
          It does not change the state of the stream. */
         static id_type retrieve_id(std::istream& in)
         {
-            std::stringstream *ss(new std::stringstream());
-            id_type id;
-            std::string *temps(new std::string(""));
-            
+            if(!in.good())
             {
-                std::istream::pos_type *temp_pos(new std::istream::pos_type(in.tellg()));
-                char *delim(new char(2)), *ch(new char());
-                
-                for(short x = 0; ((x < 2) && in.good()); x++)
-                {
-                    while((in.get(*ch), *ch) != *delim);
-                }
-                if(in.good())
-                {
-                    getline(in, *temps);
-                    if(in.fail())
-                    {
-                        in.seekg(*temp_pos);
-                        delete temp_pos;
-                        delete delim;
-                        delete ch;
-                        delete ss;
-                        delete temps;
-                        return 0;
-                    }
-                }
-                in.seekg(*temp_pos);
-                delete temp_pos;
-                delete delim;
-                delete ch;
+                return 0;
             }
-            
-            (*ss)<< (*temps);
-            (*ss)>> id;
-            temps->erase();
-            delete temps;
+            char delim(2);
+            id_type tempid(0);
+            std::stringstream *ss(new std::stringstream());
+            for(short x = 0; x < 2; x++)
+            {
+                if(!common::filesystem::loadline(in, *ss, delim))
+                {
+                    return 0;
+                }
+            }
+            (*ss)>> tempid;
             delete ss;
-            return id;
+            return tempid;
         }
         
     private:

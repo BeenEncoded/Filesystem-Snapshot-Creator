@@ -152,9 +152,10 @@ string boost_iter::gdir() const
 /* Returns true if the path is a file.*/
 bool boost_iter::is_file() const
 {
+    boost::system::error_code err;
     if(this->valid && !this->at_end())
     {
-        return boost::filesystem::is_regular_file(this->it->path());
+        return boost::filesystem::is_regular_file(this->it->path(), err);
     }
     return false;
 }
@@ -163,9 +164,10 @@ bool boost_iter::is_file() const
  a directory.*/
 bool boost_iter::is_folder() const
 {
+    boost::system::error_code err;
     if(this->valid)
     {
-        return (boost::filesystem::is_directory(this->it->path()) && !boost::filesystem::is_symlink(this->it->path()));
+        return (boost::filesystem::is_directory(this->it->path(), err) && !boost::filesystem::is_symlink(this->it->path(), err));
     }
     return false;
 }
@@ -173,7 +175,8 @@ bool boost_iter::is_folder() const
 /* Tries to return an extension. */
 string boost_iter::extension() const
 {
-    if(!boost::filesystem::is_regular_file(this->it->path()) || !(this->valid))
+    boost::system::error_code err;
+    if(!boost::filesystem::is_regular_file(this->it->path(), err) || !(this->valid))
     {
         return "";
     }
@@ -217,9 +220,10 @@ BOOST_IT boost_iter::from_string(const string& s) const
 
 bool boost_iter::is_valid_path(const string& s) const
 {
+    boost::system::error_code err;
     boost::filesystem::path p(s);
-    return ((boost::filesystem::is_directory(p) && !boost::filesystem::is_symlink(p)) || 
-            boost::filesystem::is_regular_file(p));
+    return ((boost::filesystem::is_directory(p, err) && !boost::filesystem::is_symlink(p, err)) || 
+            boost::filesystem::is_regular_file(p, err));
 }
 
 /** ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

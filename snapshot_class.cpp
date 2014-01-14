@@ -34,34 +34,11 @@ namespace
         id_type id(0);
         stringstream ss;
         char delim(DATAMEMBER_DELIM);
-        
-        for(short x = 0; ((x < 3) && in.good()); x++)
+        bool temp_b(false);
+        for(short x = 0; ((x < 2) && in.good() && ((temp_b = common::filesystem::loadline(in, ss, delim)), temp_b)); x++);
+        if(temp_b)
         {
-            switch(x < 2)
-            {
-                case true:
-                {
-                    if(!common::filesystem::loadline(in, ss, delim) || !in.good())
-                    {
-                        return 0;
-                    }
-                    ss.str("");
-                }
-                break;
-                
-                case false:
-                {
-                    if(!common::filesystem::loadline(in, ss, delim))
-                    {
-                        return 0;
-                    }
-                    return ((ss>> id), id);
-                }
-                break;
-                
-                default:
-                    break;
-            }
+            ss>> id;
         }
         return id;
     }
@@ -167,73 +144,73 @@ namespace snapshot
         if(this->id == 0)
         {
             throw "C++ exception: \"ostream& snapshot_class::out(ostream& out) const\" INVALID ID value";
+            
         }
         
         char delim(DATAMEMBER_DELIM);
-        out<< this->path_list<< delim;
         out<< this->timestamp<< delim;
         out<< this->id<< delim;
+        out<< this->path_list.size()<< delim;
+        out<< this->path_list<< delim;
         return out;
     }
     
     istream& snapshot_class::in(istream& in)
     {
+        common::input::ccin();
         this->clear();
-        char delim(DATAMEMBER_DELIM);
-        stringstream *ss(new stringstream());
-        
-        for(short x = 0; x < 3; x++)
+        if(!in.good())
         {
-            if(!common::filesystem::loadline(in, *ss, delim))
+            return in;
+        }
+        stringstream ss;
+        char snap_delim(DATAMEMBER_DELIM), str_delim(STRING_DELIM), ch;
+        in.get(ch);
+        
+        //load_timestamp:
+        if(in.good())
+        {
+            if(common::filesystem::loadline(in, ss, snap_delim))
             {
-                if(ss != NULL)
-                {
-                    delete ss;
-                    ss = NULL;
-                }
+                this->timestamp = ss.str();
+            }
+        }
+        
+        //load id:
+        if(in.good())
+        {
+            if(common::filesystem::loadline(in, ss, snap_delim))
+            {
+                ss>> this->id;
+            }
+        }
+        
+        if(in.good())
+        {
+            if(!common::filesystem::loadline(in, ss, snap_delim))
+            {
+                this->clear();
                 return in;
             }
-            if(in.good())
-            {
-                switch(x)
-                {
-                    case 0:
-                    {
-                        (*ss)>> pathList_type(this->path_list);
-                    }
-                    break;
-
-                    case 1:
-                    {
-                        (*ss)>> this->timestamp;
-                    }
-                    break;
-
-                    case 2:
-                    {
-                        (*ss)>> this->id;
-                    }
-                    break;
-
-                    default:
-                    {
-                        if(ss != NULL)
-                        {
-                            delete ss;
-                            ss = NULL;
-                            ss = new stringstream();
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-        if(ss != NULL)
-        {
-            delete ss;
-            ss = NULL;
         }
         
+        //load path_list directly:
+        while((ch != snap_delim) && in.good())
+        {
+            this->path_list.push_back(path_type());
+            
+            //get 1 string
+            do
+            {
+                this->path_list.back() += ch;
+                in.get(ch);
+            }
+            while((ch != snap_delim) && (ch != str_delim) && in.good());
+            if(in.good())
+            {
+                in.get(ch);
+            }
+        }
         return in;
     }
     
