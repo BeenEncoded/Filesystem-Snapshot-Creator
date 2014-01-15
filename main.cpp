@@ -75,7 +75,10 @@ namespace
         for(unsigned int x = 0; x < temps.size(); x++)
         {
             newtemps += temps[x];
-            if(((x + 1) % 4) == 0) newtemps += ',';
+            if(x < (temps.size() - 1))
+            {
+                if(((x + 1) % 3) == 0) newtemps += ',';
+            }
         }
         temps.erase();
         return newtemps;
