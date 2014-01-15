@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <windows.h>
+#include "fsysclass.h"
 #include "global_defines.h"
 #include "color.h"
 
@@ -296,6 +297,15 @@ namespace common
         bool loadline(istream& in, stringstream& ss)
         {
             return loadline(in, ss, '\n');
+        }
+        
+        /** Returns the drive directory (aka "C:\\", or whatever the drive
+         is)*/
+        string retrieve_root_dir()
+        {
+            string temps(fsys_class().gpath());
+            if(temps.size() > string("A:\\").size()) temps.resize(string("A:\\").size());
+            return temps;
         }
     }
 }

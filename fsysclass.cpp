@@ -767,7 +767,7 @@ int create_dir(const string& parent, const string& foldername)
  the fsys_class::path if fsys_class::path is a folder.*/
 int fsys_class::create(const string& sub_folder)
 {
-    if(is_folder_supliment(fsys_class::path) == false)
+    if(is_folder_supliment(this->path) == false)
     {
         return FSYS_ERROR;
     }

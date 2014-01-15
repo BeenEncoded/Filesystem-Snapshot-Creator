@@ -129,6 +129,8 @@ namespace common
         std::string loadline(std::istream&);
         bool loadline(std::istream&, std::stringstream&, const char&);
         bool loadline(std::istream&, std::stringstream&);
+        
+        std::string retrieve_root_dir();
     }
     
 }

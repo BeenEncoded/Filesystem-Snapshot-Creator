@@ -87,7 +87,7 @@ namespace
         {
             return "";
         }
-        string temps = s;
+        string temps(s);
         
         //remove specials
         for(string::iterator it = temps.begin(); it != temps.end(); it++)
@@ -107,7 +107,7 @@ namespace
             }
         }
         
-        return s;
+        return temps;
     }
 }
 
@@ -218,6 +218,11 @@ namespace snapshot
                     delete ss;
                     return tempsnap;
                 }
+            }
+            if(common::filesystem::loadline(in, *ss))
+            {
+                delete ss;
+                ss = new stringstream();
             }
         }
         in.close();
@@ -343,10 +348,23 @@ namespace snapshot
     
     inline void compare(const snapshotSelection::snapshot_selection_class& selected)
     {
+        {
+            using namespace common;
+            cls();
+            for(short x = 0; x < 10; x++) cout<< endl;
+            center("Please wait... Comparison under way...");
+        }
+        
         snapshot_class snap1(from_id(selected.snapshots()[0]->id)), snap2(from_id(selected.snapshots()[1]->id));
         map<string, char> before, after;
         vector<string> created, deleted;
         ofstream out;
+        string filename(string(REPORT_FOLDER) + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt");
+        
+        if(!fsys_class(REPORT_FOLDER).is_folder())
+        {
+            fsys_class().create(fsys_class(REPORT_FOLDER).gfilename());
+        }
         
         if(chrono_date(snap2.get_timestamp()) < chrono_date(snap1.get_timestamp()))
         {
@@ -359,14 +377,75 @@ namespace snapshot
         created = differences(after, before);
         deleted = differences(before, after);
         
-        out.open(string(string(REPORT_FOLDER) + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt").c_str(), ios::OUTFILE);
+        out.open(filename.c_str(), ios::OUTFILE);
         
         out<< "Snapshot time frame: ["<< chrono_date(snap1.get_timestamp()).std_time_disp()<< "], ["<< 
                 chrono_date(snap2.get_timestamp()).std_time_disp()<< "]"<< endl;
-        for(short x = 0; x < 3; x++) out<< endl;
-        /* The rest of the report.  time for bed!*/
+        
+        switch((created.size() + deleted.size()) > 0)
+        {
+            case true:
+            {
+                for(short x = 0; x < 3; x++) out<< endl;
+                
+                switch(created.size() > 0)
+                {
+                    case true:
+                    {
+                        out<< "CREATED PATHS: "<< endl<< endl;
+                        for(vector<string>::const_iterator it = created.begin(); it != created.end(); ++it) out<< *it<< endl;
+                    }
+                    
+                    case false:
+                    {
+                        if(deleted.size() > 0)
+                        {
+                            if(created.size() > 0)
+                            {
+                                for(short x = 0; x < 3; x++) out<< endl;
+                            }
+                            out<< "DELETED PATHS: "<< endl<< endl;
+                            for(vector<string>::const_iterator it = deleted.begin(); it != deleted.end(); ++it) out<< *it<< endl;
+                        }
+                    }
+                    break;
+                    
+                    default:
+                    {
+                    }
+                    break;
+                }
+            }
+            break;
+            
+            case false:
+            {
+                out<< "No Changes!";
+            }
+            break;
+            
+            default:
+            {
+            }
+            break;
+        }
         
         out.close();
+        
+        {
+            using namespace common;
+            cls();
+            input::ccin();
+            if(input::is_sure("Would you like to open the report now?"))
+            {
+                cls();
+                for(short x = 0; x < 10; x++) cout<< endl;
+                center("Waiting for you to finish...");
+                system(string("\"" + filename + "\"").c_str());
+                cls();
+            }
+        }
+        
     }
 }
 
@@ -382,7 +461,7 @@ inline void take_snapshot()
     
     snapshot::snapshot_class snap;
     
-    snap.take_snapshot(fsys_class().gpath());
+    snap.take_snapshot(common::filesystem::retrieve_root_dir());
     switch(snapshot::snapshot_class::is_valid(snap))
     {
         case true:
@@ -675,7 +754,8 @@ inline void manage_snapshots()
                                 {
                                     if(snap_selection.snapshots().size() == 2)
                                     {
-                                        //run comparison
+                                        snapshot::compare(snap_selection);
+                                        snap_selection.clear();
                                     }
                                 }
                                 break;

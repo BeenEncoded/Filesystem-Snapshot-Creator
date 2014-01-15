@@ -36,7 +36,7 @@ public:
     int create(const std::string&); //only for folders
     int rename(const std::string&);
     
-    //folder only functions
+    /**folder only functions*/
     std::vector<std::string> sub_stuff();
     
     //------------------------
