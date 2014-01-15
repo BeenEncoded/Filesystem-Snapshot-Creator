@@ -79,7 +79,7 @@ namespace snapshot
             if(this != &snap)
             {
                 this->clear();
-                
+                this->id = snap.id;
                 this->path_list = snap.path_list;
                 this->timestamp = snap.timestamp;
             }
@@ -138,22 +138,37 @@ namespace snapshot
             {
                 return;
             }
-            std::stringstream ss;
+            /* For some reason, stringstream was not retrieving characters for
+             the pathcount.  It extracted them from (in), but would not
+             place them into (ss).  This happened when the function got
+             to loading the pathcount, and I could not figure out why.  Creating
+             and destroying the stringstream was the only way I could
+             think of to insure that it was impossible for the stream to have 
+             gone bad before extraction from the istream.*/
+            std::stringstream *ss(new std::stringstream());
             char delim(2);
             
-            if(common::filesystem::loadline(in, ss, delim))
+            if(common::filesystem::loadline(in, *ss, delim))
             {
-                bsd.t = ss.str();
-            }
-            if(common::filesystem::loadline(in, ss, delim))
-            {
-                ss>> bsd.id;
-            }
-            if(common::filesystem::loadline(in, ss, delim))
-            {
-                ss>> bsd.pathcount;
+                bsd.t = ss->str();
             }
             
+            delete ss;
+            ss = new std::stringstream();
+            
+            if(common::filesystem::loadline(in, *ss, delim))
+            {
+                (*ss)>> bsd.id;
+            }
+            
+            delete ss;
+            ss = new std::stringstream();
+            
+            if(common::filesystem::loadline(in, *ss, delim))
+            {
+                (*ss)>> bsd.pathcount;
+            }
+            delete ss;
         }
         
         /* Returns true if it contains data.  False if not.*/
@@ -172,15 +187,22 @@ namespace snapshot
                 return 0;
             }
             char delim(2);
+            std::istream::pos_type *pos(new std::istream::pos_type(in.tellg()));
             id_type tempid(0);
             std::stringstream *ss(new std::stringstream());
+            
             for(short x = 0; x < 2; x++)
             {
                 if(!common::filesystem::loadline(in, *ss, delim))
                 {
+                    in.seekg(*pos);
+                    delete pos;
+                    delete ss;
                     return 0;
                 }
             }
+            in.seekg(*pos);
+            delete pos;
             (*ss)>> tempid;
             delete ss;
             return tempid;

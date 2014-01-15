@@ -93,6 +93,20 @@ namespace
     
     //-----------------------------------------
     
+    inline bool delim_met(istream& in, const string& delims)
+    {
+        if(in.good())
+        {
+            for(string::const_iterator it = delims.begin(); it != delims.end(); ++it)
+            {
+                if(*it == char(in.peek()))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     
 }
 
@@ -163,46 +177,59 @@ namespace snapshot
         {
             return in;
         }
-        stringstream ss;
-        char snap_delim(DATAMEMBER_DELIM), str_delim(STRING_DELIM), ch;
-        in.get(ch);
+        stringstream *ss(new stringstream());
+        
+        char ch, snap_delim(DATAMEMBER_DELIM), str_delim(STRING_DELIM);
+        
+        string str_delims({char(STRING_DELIM), char(DATAMEMBER_DELIM), char(EOF)}), 
+                snap_delims({char(DATAMEMBER_DELIM), char(EOF)});
         
         //load_timestamp:
-        if(common::filesystem::loadline(in, ss, snap_delim))
+        if(common::filesystem::loadline(in, *ss, snap_delim))
         {
-            this->timestamp = ss.str();
+            this->timestamp = ss->str();
         }
+        
+        delete ss;
+        ss = new stringstream();
         
         //load id:
-        if(common::filesystem::loadline(in, ss, snap_delim))
+        if(common::filesystem::loadline(in, *ss, snap_delim))
         {
-            ss>> this->id;
+            (*ss)>> this->id;
         }
+        
+        delete ss;
+        ss = new stringstream();
         
         //skip the pathcount information used for basic-data loading
-        if(!common::filesystem::loadline(in, ss, snap_delim))
-        {
-            this->clear();
-            return in;
-        }
+        common::filesystem::loadline(in, *ss, snap_delim);
+        
+        delete ss;
         
         //load path_list directly:
-        while((ch != snap_delim) && in.good())
+        while(in.good() && !delim_met(in, snap_delims))
         {
             this->path_list.push_back(path_type());
             
             //get 1 string
-            do
+            while(in.good() && !delim_met(in, str_delims))
             {
-                this->path_list.back() += ch;
                 in.get(ch);
+                this->path_list.back() += ch;
             }
-            while((ch != snap_delim) && (ch != str_delim) && in.good());
-            if(in.good())
+            
+            //discard of deliminator if we met it
+            if(char(in.peek()) == str_delim)
             {
                 in.get(ch);
             }
         }
+        if(in.peek() == snap_delim)
+        {
+            in.get(ch);
+        }
+        
         return in;
     }
     
@@ -257,6 +284,7 @@ namespace snapshot
         in.open(filename.c_str(), ios::INFILE);
         if(common::filesystem::size(in) == 0)
         {
+            in.close();
             return vector<id_type>();
         }
         while(in.good())

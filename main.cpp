@@ -71,10 +71,11 @@ namespace
             }
         }
         
+        //add commas to denote hundreds, thousands, millions... placeholders:
         for(unsigned int x = 0; x < temps.size(); x++)
         {
-            if(((x + 1) % 3) == 0) newtemps += ',';
-            newtemps += temps[(temps.size() - (x + 1))];
+            newtemps += temps[x];
+            if(((x + 1) % 4) == 0) newtemps += ',';
         }
         temps.erase();
         return newtemps;
@@ -134,7 +135,7 @@ namespace snapshot
         if(snaps.size() > 1)
         {
             //move the first basic_snapshot_data into a temporary storage
-            tempsnap = *snaps.begin();
+            tempsnap = *(snaps.begin());
             snaps.erase(snaps.begin());
             
             /* Get the most recent snapdata*/
@@ -146,7 +147,7 @@ namespace snapshot
                     throw "ERROR: Invalid Time Value!!";
                     abort();
                 }
-                if(chrono_date(it->t) < chrono_date(tempsnap.t))
+                if(!(chrono_date(it->t) < chrono_date(tempsnap.t)) && !(it->t == tempsnap.t))
                 {
                     swap(tempsnap, *it);
                 }
@@ -154,7 +155,7 @@ namespace snapshot
             
             //recurse!
             sort_basic_data(snaps);
-            snaps.insert((snaps.begin() + (snaps.size() - 1)), tempsnap);
+            snaps.insert(snaps.begin(), tempsnap);
         }
     }
     
@@ -202,43 +203,25 @@ namespace snapshot
             return snapshot_class();
         }
         ifstream in;
-        string temps("");
-        stringstream ss; //for good measure.
-        snapshot_class snap;
-        basic_snapshot_data basics;
+        stringstream *ss(new stringstream());
+        snapshot_class tempsnap;
         
         in.open(filename.c_str(), ios::INFILE);
         while(in.good())
         {
-            ss.str("");
-            getline(in, temps);
-            if(temps.size() == 0)
+            if(snapshot_class::retrieve_id(in) == id)
             {
-                continue;
-            }
-            
-            //we want to be memory efficient here, we could be copying a LOT of characters:
-            for(string::iterator it = temps.begin(); it != temps.end();)
-            {
-                ss<< *it;
-                it = temps.erase(it);
-            }
-            snapshot_class::load_basic(ss, basics);
-            if(basics.id == id)
-            {
-                ss.seekg(0, stringstream::beg);
-                ss>> snap;
-                
-                //erase the vars; for good measure
-                ss.str("");
-                in.close();
-                temps.erase();
-                return snap;
+                if(common::filesystem::loadline(in, *ss))
+                {
+                    in.close();
+                    (*ss)>> tempsnap;
+                    delete ss;
+                    return tempsnap;
+                }
             }
         }
         in.close();
-        ss.str("");
-        temps.erase();
+        delete ss;
         return snapshot_class();
     }
     
@@ -246,6 +229,7 @@ namespace snapshot
      the specified id.*/
     inline void delete_snapshot(const id_type& id)
     {
+        common::input::ccin();
         ifstream in;
         ofstream out;
         if(!fsys_class(string(SNAPSHOT_FILE)).is_file())
@@ -258,10 +242,7 @@ namespace snapshot
         {
             string *snapfile(new string(SNAPSHOT_FILE)), *tempfile(new string(fsys_class().gpath() + "\\Temp.dat"));
             char *ch(new char());
-            
-            //i had the wierdest dream: that arrays had member functions!!  wierd...
-            //As I dreamed it, I thought to myself: "So that's how they did it in C!!" LOL
-            
+            bool *temp_b(new bool());
             
             rename(snapfile->c_str(), tempfile->c_str());
             out.open(snapfile->c_str(), ios::OUTFILE);
@@ -275,12 +256,20 @@ namespace snapshot
                     while(((in.get(*ch), *ch) != '\n') && in.good());
                     continue;
                 }
-                
+                *ch = '\0';
+                *temp_b = false;
                 //copy the next snapshot:
-                while(in.good() && ((in.get(*ch), *ch) != '\n'))
+                while(in.good() && (char(in.peek()) != '\n'))
                 {
-                    out<< *ch;
+                    in.get(*ch);
+                    out<< (*ch);
+                    if(!(*temp_b)) *temp_b = true;
                 }
+                if(char(in.peek()) == '\n')
+                {
+                    in.get(*ch);
+                }
+                if(*temp_b) out<< '\n';
             }
             in.close();
             out.close();
@@ -288,6 +277,7 @@ namespace snapshot
             {
                 tempfile->erase();
                 snapfile->erase();
+                delete temp_b;
                 delete tempfile;
                 delete snapfile;
                 delete ch;
@@ -299,9 +289,10 @@ namespace snapshot
                 common::wait();
                 return;
             }
-                
+            
             tempfile->erase();
             snapfile->erase();
+            delete temp_b;
             delete tempfile;
             delete snapfile;
             delete ch;

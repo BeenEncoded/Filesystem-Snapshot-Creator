@@ -237,11 +237,22 @@ namespace common
     {
         string loadline(istream& in, const char& delim)
         {
+            common::input::ccin();
             stringstream s;
             string temps;
             if(in.good())
             {
                 getline(in, temps, delim);
+                
+                //if the getlin() function left the deliminator in the stream, discard it.
+                if(char(in.peek()) == delim)
+                {
+                    char *ch(new char());
+                    in.get(*ch);
+                    delete ch;
+                }
+                
+                //check for failure:
                 if(!in.fail() || (temps.size() == 0))
                 {
                     s<< temps;
@@ -267,16 +278,18 @@ namespace common
             }
             char ch;
             bool temp_b(false);
-            do
+            while(in.good() && (char(in.peek()) != delim) && (char(in.peek()) != EOF))
             {
                 in.get(ch);
-                if(ch != delim)
-                {
-                    ss<< ch;
-                    temp_b = true;
-                }
+                ss<< ch;
+                if(!temp_b) temp_b = true;
             }
-            while((in.good()) && (ch != delim));
+            
+            //discard the deliminator in the stream
+            if(char(in.peek()) == delim)
+            {
+                in.get(ch);
+            }
             return temp_b;
         }
         
