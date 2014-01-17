@@ -27,8 +27,6 @@ using namespace std;
 
 /* @todo
  * 
- * -  Write up the menus
- * -  Snapshot comparison functions
  * 
  */
 
