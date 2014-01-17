@@ -1,6 +1,7 @@
 #ifndef GLOBAL_DEFINES_H_INCLUDED
 #define GLOBAL_DEFINES_H_INCLUDED
 #include "fsysclass.h"
+#include "global_vars.hpp"
 
 /* Character sets: */
 #define LETTERS "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
@@ -42,7 +43,6 @@
 //------------------------------------------------------------------------------
 
 #define SNAPSHOT_FILE (fsys_class().gpath() + "\\Your Snapshots.snap")
-#define REPORT_FOLDER (fsys_class().gpath() + "\\Reports")
 
 /* File stream defines.  These can be used to easily change the way the streams
  are opened.*/

@@ -13,6 +13,7 @@ namespace color
         void green(const std::string&);
         void blue(const std::string&);
         void dark_green(const std::string&);
+        void red(const std::string&);
     }
     
     //center-highlight colors (good for titles and stuff)

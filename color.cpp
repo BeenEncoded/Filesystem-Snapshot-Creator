@@ -3,6 +3,7 @@
 #include "concol.h"
 #include <string>
 #include "global_defines.h"
+#include "global_vars.hpp"
 #include "common.h"
 
 using namespace std;
@@ -12,7 +13,7 @@ namespace
     
     inline void setcol(const eku::concol& text, const eku::concol& back)
     {
-        if(USECOLOR)
+        if(USECOLOR && settings().use_color)
         {
             if((eku::textcol != text) || (eku::backcol != back))
             {
@@ -52,10 +53,7 @@ namespace color
     
     void initialize()
     {
-        if(USECOLOR)
-        {
-            eku::concolinit();
-        }
+        eku::concolinit();
     }
     
     namespace hl
@@ -73,6 +71,11 @@ namespace color
         void blue(const string& s)
         {
             highlight(eku::white, eku::dark_blue, s);
+        }
+        
+        void red(const string& s)
+        {
+            highlight(eku::white, eku::dark_red, s);
         }
     }
     

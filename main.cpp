@@ -12,6 +12,7 @@
 #include "t_extra.h"
 #include "fsysclass.h"
 #include "snapshot_selection_class.hpp"
+#include "global_vars.hpp"
 
 #include <iostream>
 #include <exception>
@@ -362,11 +363,20 @@ namespace snapshot
         map<string, char> before, after;
         vector<string> created, deleted;
         ofstream out;
-        string filename(string(REPORT_FOLDER) + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt");
+        string filename(string(settings().report_folder) + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt");
         
-        if(!fsys_class(REPORT_FOLDER).is_folder())
+        if(!fsys_class(settings().report_folder).is_folder())
         {
-            fsys_class().create(fsys_class(REPORT_FOLDER).gfilename());
+            {
+                using namespace common;
+                cls();
+                for(short x = 0; x < 10; x++) cout<< endl;
+                center("ERROR: report folder does not exist.");
+                cout<< endl;
+                wait();
+                cls();
+                return;
+            }
         }
         
         if(chrono_date(snap2.get_timestamp()) < chrono_date(snap1.get_timestamp()))
@@ -396,7 +406,14 @@ namespace snapshot
                     case true:
                     {
                         out<< "CREATED PATHS: "<< endl<< endl;
-                        for(vector<string>::const_iterator it = created.begin(); it != created.end(); ++it) out<< *it<< endl;
+                        for(vector<string>::const_iterator it = created.begin(); it != created.end(); ++it)
+                        {
+                            out<< *it;
+                            if(it != (deleted.begin() + (deleted.size() - 1)))
+                            {
+                                out<< endl;
+                            }
+                        }
                     }
                     
                     case false:
@@ -408,7 +425,14 @@ namespace snapshot
                                 for(short x = 0; x < 3; x++) out<< endl;
                             }
                             out<< "DELETED PATHS: "<< endl<< endl;
-                            for(vector<string>::const_iterator it = deleted.begin(); it != deleted.end(); ++it) out<< *it<< endl;
+                            for(vector<string>::const_iterator it = deleted.begin(); it != deleted.end(); ++it)
+                            {
+                                out<< *it;
+                                if(it != (deleted.begin() + (deleted.size() - 1)))
+                                {
+                                    out<< endl;
+                                }
+                            }
                         }
                     }
                     break;
@@ -456,6 +480,17 @@ namespace snapshot
 inline void take_snapshot()
 {
     using namespace common;
+    
+    if(!fsys_class(settings().target_folder).is_folder())
+    {
+        cls();
+        for(short x = 0; x < 10; x++) cout<< endl;
+        center(string("Error: \"" + settings().target_folder + "\" is not a folder."));
+        cout<< endl;
+        wait();
+        return;
+    }
+    
     color::set::greenblue();
     
     for(short x = 0; x < 3; x++) cout<< endl;
@@ -464,7 +499,7 @@ inline void take_snapshot()
     
     snapshot::snapshot_class snap;
     
-    snap.take_snapshot(common::filesystem::retrieve_root_dir());
+    snap.take_snapshot(settings().target_folder);
     switch(snapshot::snapshot_class::is_valid(snap))
     {
         case true:
@@ -794,6 +829,108 @@ inline void manage_snapshots()
     }
 }
 
+inline void options_menu()
+{
+    using namespace common;
+    
+    color::set::blue();
+    
+    char ch;
+    while(true)
+    {
+        cls();
+        cout<< endl;
+        center("Settings");
+        cout<< endl;
+        
+        for(short x = 0; x < 3; x++) cout<< endl;
+        
+        cout<< " 1 -  Use color in the program: ";
+        (settings().use_color ? color::hl::green("ON") : color::hl::red("OFF"));
+        cout<< endl;
+        
+        cout<< " 2 -  Report Folder: \"";
+        (fsys_class(settings().report_folder).is_folder() ? color::hl::green(settings().report_folder) : color::hl::red(settings().report_folder));
+        cout<< "\""<< endl;
+        
+        cout<< " 3 -  Folder to take Snapshot of: \"";
+        (fsys_class(settings().target_folder).is_folder() ? color::hl::green(settings().target_folder) : color::hl::red(settings().target_folder));
+        cout<< "\""<< endl;
+        cout<< endl;
+        
+        cout<< " [BACKSPACE]: Done"<< endl;
+        
+        ch = common::input::gkey();
+        
+        switch(common::is_char(ch))
+        {
+            case true:
+            {
+                switch(ch)
+                {
+                    case '1':
+                    {
+                        settings().use_color = !settings().use_color;
+                    }
+                    break;
+                    
+                    case '2':
+                    {
+                        {
+                            string *temps(new string(""));
+                            *temps = common::input::get_user_string(("Current folder: \"" + settings().report_folder + 
+                                    string("\"\n\n\n Enter a report folder: ")));
+                            if(*temps != GSTRING_CANCEL)
+                            {
+                                settings().report_folder = *temps;
+                            }
+                            temps->erase();
+                            delete temps;
+                        }
+                    }
+                    break;
+                    
+                    case '3':
+                    {
+                        {
+                            string *temps(new string(""));
+                            *temps = common::input::get_user_string(("Current target: \"" + 
+                                    settings::target_folder + string("\"\n\n\nEnter a Target: ")));
+                            if(*temps != GSTRING_CANCEL)
+                            {
+                                settings::target_folder = *temps;
+                            }
+                            temps->erase();
+                            delete temps;
+                        }
+                    }
+                    break;
+                    
+                    default:
+                    {
+                    }
+                    break;
+                }
+            }
+            break;
+            
+            case false:
+            {
+                if(int(ch) == BACKSPACE_KEY)
+                {
+                    return;
+                }
+            }
+            break;
+            
+            default:
+            {
+            }
+            break;
+        }
+    }
+}
+
 inline void main_menu()
 {
     using namespace snapshot;
@@ -815,6 +952,7 @@ inline void main_menu()
         
         cout<< " 1 -  Take snapshot"<< endl;
         cout<< " 2 -  Manage Snapshots"<< endl;
+        cout<< " 3 -  Manage Settings"<< endl;
         cout<< " q -  Exit"<< endl;
         
         ch = input::gkey();
@@ -846,6 +984,12 @@ inline void main_menu()
                 cout<< endl;
                 manage_snapshots();
                 color::set::blackwhite();
+            }
+            break;
+            
+            case '3':
+            {
+                options_menu();
             }
             break;
             
