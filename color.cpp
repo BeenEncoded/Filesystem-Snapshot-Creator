@@ -13,6 +13,7 @@ namespace
     
     inline void setcol(const eku::concol& text, const eku::concol& back)
     {
+        settings settings_inst;
         if(USECOLOR && settings().use_color)
         {
             if((eku::textcol != text) || (eku::backcol != back))
@@ -107,6 +108,11 @@ namespace color
         void blue()
         {
             setcol(eku::aqua, eku::dark_blue);
+        }
+        
+        void def()
+        {
+            setcol(eku::white, eku::black);
         }
     }
     

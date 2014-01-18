@@ -1,6 +1,8 @@
 #ifndef GLOBAL_VARS_HPP_INCLUDED
 #define GLOBAL_VARS_HPP_INCLUDED
 #include <string>
+#include <iostream>
+#include "fsysclass.h"
 
 namespace common
 {
@@ -9,6 +11,11 @@ namespace common
         std::string retrieve_root_dir();
     }
 }
+
+class settings;
+
+std::ostream& operator<<(std::ostream&, settings&);
+std::istream& operator>>(std::istream&, settings&);
 
 class settings
 {
@@ -26,9 +33,5 @@ public:
     //folder that a snapshot will be taken of
     static std::string target_folder;
 };
-
-std::string settings::report_folder = "";
-bool settings::use_color = false;
-std::string settings::target_folder = common::filesystem::retrieve_root_dir();
 
 #endif

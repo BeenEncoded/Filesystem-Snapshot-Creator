@@ -105,7 +105,7 @@ namespace common
         string get_user_string(const string& message)
         {
             color::set::blackwhite();
-            char ch(0), control(0);
+            char ch(0);
             string inp("");
             
             while(true)
@@ -122,15 +122,34 @@ namespace common
                 {
                     ch = getch();
                     
-                    switch(is_control_key(ch))
+                    switch(is_char(ch))
                     {
-                        //it's a control key
                         case true:
                         {
-                            control = getch();
-                            
-                            switch(int(control))
+                            inp += ch;
+                        }
+                        break;
+
+                        case false:
+                        {
+                            switch(int(ch))
                             {
+
+                                case ENTER_KEY:
+                                {
+                                    return inp;
+                                }
+                                break;
+
+                                case BACKSPACE_KEY:
+                                {
+                                    if(inp.size() > 0)
+                                    {
+                                        inp.resize((inp.size() - 1));
+                                    }
+                                }
+                                break;
+
                                 case ESCAPE_KEY:
                                 {
                                     return GSTRING_CANCEL;
@@ -142,50 +161,7 @@ namespace common
                             }
                         }
                         break;
-                        
-                        //ch is not a control key
-                        case false:
-                        {
-                            switch(is_char(ch))
-                            {
-                                case true:
-                                {
-                                    inp += ch;
-                                }
-                                break;
-                                
-                                case false:
-                                {
-                                    switch(int(ch))
-                                    {
-                                        
-                                        case ENTER_KEY:
-                                        {
-                                            return inp;
-                                        }
-                                        break;
-                                        
-                                        case BACKSPACE_KEY:
-                                        {
-                                            if(inp.size() > 0)
-                                            {
-                                                inp.resize((inp.size() - 1));
-                                            }
-                                        }
-                                        break;
-                                        
-                                        default:
-                                            break;
-                                    }
-                                }
-                                break;
-                                
-                                default:
-                                    break;
-                            }
-                        }
-                        break;
-                       
+
                         default:
                             break;
                     }

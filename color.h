@@ -29,6 +29,7 @@ namespace color
         void blackwhite();
         void greenblue();
         void blue();
+        void def();
     }
     
 }

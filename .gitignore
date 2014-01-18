@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 
+*.o
 *.inc
 *.dep.inc
 *.txt

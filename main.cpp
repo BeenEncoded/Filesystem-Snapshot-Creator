@@ -33,7 +33,6 @@ using namespace std;
  * 
  */
 
-
 namespace
 {
     template<class type1, class type2>
@@ -112,6 +111,17 @@ namespace
         }
         
         return temps;
+    }
+    
+    inline void save_settings()
+    {
+        settings settings_inst;
+        ofstream out;
+        string filename(fsys_class().gpath() + "\\Settings.dat");
+        
+        out.open(filename.c_str(), ios::OUTFILE);
+        out<< settings_inst;
+        out.close();
     }
 }
 
@@ -352,6 +362,7 @@ namespace snapshot
     
     inline void compare(const snapshotSelection::snapshot_selection_class& selected)
     {
+        settings settings_inst;
         {
             using namespace common;
             cls();
@@ -363,9 +374,9 @@ namespace snapshot
         map<string, char> before, after;
         vector<string> created, deleted;
         ofstream out;
-        string filename(string(settings().report_folder) + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt");
+        string filename(string(settings::report_folder) + "\\" + sanitize_string(chrono_date().gasc_time()) + ".txt");
         
-        if(!fsys_class(settings().report_folder).is_folder())
+        if(!fsys_class(settings::report_folder).is_folder())
         {
             {
                 using namespace common;
@@ -480,12 +491,13 @@ namespace snapshot
 inline void take_snapshot()
 {
     using namespace common;
+    settings settings_inst;
     
-    if(!fsys_class(settings().target_folder).is_folder())
+    if(!fsys_class(settings::target_folder).is_folder())
     {
         cls();
         for(short x = 0; x < 10; x++) cout<< endl;
-        center(string("Error: \"" + settings().target_folder + "\" is not a folder."));
+        center(string("Error: \"" + settings::target_folder + "\" is not a folder."));
         cout<< endl;
         wait();
         return;
@@ -499,7 +511,7 @@ inline void take_snapshot()
     
     snapshot::snapshot_class snap;
     
-    snap.take_snapshot(settings().target_folder);
+    snap.take_snapshot(settings::target_folder);
     switch(snapshot::snapshot_class::is_valid(snap))
     {
         case true:
@@ -832,6 +844,7 @@ inline void manage_snapshots()
 inline void options_menu()
 {
     using namespace common;
+    settings settings_inst;
     
     color::set::blue();
     
@@ -846,15 +859,15 @@ inline void options_menu()
         for(short x = 0; x < 3; x++) cout<< endl;
         
         cout<< " 1 -  Use color in the program: ";
-        (settings().use_color ? color::hl::green("ON") : color::hl::red("OFF"));
+        (settings::use_color ? color::hl::green("ON") : color::hl::red("OFF"));
         cout<< endl;
         
         cout<< " 2 -  Report Folder: \"";
-        (fsys_class(settings().report_folder).is_folder() ? color::hl::green(settings().report_folder) : color::hl::red(settings().report_folder));
+        (fsys_class(settings::report_folder).is_folder() ? color::hl::green(settings::report_folder) : color::hl::red(settings::report_folder));
         cout<< "\""<< endl;
         
         cout<< " 3 -  Folder to take Snapshot of: \"";
-        (fsys_class(settings().target_folder).is_folder() ? color::hl::green(settings().target_folder) : color::hl::red(settings().target_folder));
+        (fsys_class(settings::target_folder).is_folder() ? color::hl::green(settings::target_folder) : color::hl::red(settings::target_folder));
         cout<< "\""<< endl;
         cout<< endl;
         
@@ -870,7 +883,9 @@ inline void options_menu()
                 {
                     case '1':
                     {
-                        settings().use_color = !settings().use_color;
+                        color::set::def();
+                        settings::use_color = !settings::use_color;
+                        color::set::blue();
                     }
                     break;
                     
@@ -878,15 +893,16 @@ inline void options_menu()
                     {
                         {
                             string *temps(new string(""));
-                            *temps = common::input::get_user_string(("Current folder: \"" + settings().report_folder + 
+                            *temps = common::input::get_user_string(("Current folder: \"" + settings::report_folder + 
                                     string("\"\n\n\n Enter a report folder: ")));
                             if(*temps != GSTRING_CANCEL)
                             {
-                                settings().report_folder = *temps;
+                                settings::report_folder = *temps;
                             }
                             temps->erase();
                             delete temps;
                         }
+                        color::set::blue();
                     }
                     break;
                     
@@ -903,6 +919,7 @@ inline void options_menu()
                             temps->erase();
                             delete temps;
                         }
+                        color::set::blue();
                     }
                     break;
                     
@@ -918,6 +935,7 @@ inline void options_menu()
             {
                 if(int(ch) == BACKSPACE_KEY)
                 {
+                    save_settings();
                     return;
                 }
             }
@@ -990,6 +1008,7 @@ inline void main_menu()
             case '3':
             {
                 options_menu();
+                color::set::blackwhite();
             }
             break;
             
@@ -1009,6 +1028,25 @@ inline void main_menu()
 int main()
 {
     color::initialize();
+    
+    //load settings:
+    {
+        string *filename(new string(fsys_class().gpath() + "\\Settings.dat"));
+        if(fsys_class(*filename).is_file())
+        {
+            settings *settings_inst(new settings());
+            ifstream *in(new ifstream());
+            
+            in->open(filename->c_str(), ios::INFILE);
+            (*in)>> (*settings_inst);
+            in->close();
+            
+            delete settings_inst;
+            delete in;
+        }
+        filename->erase();
+        delete filename;
+    }
     
     main_menu();
     
