@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 
+*stat
 *.o
 *.inc
 *.dep.inc
